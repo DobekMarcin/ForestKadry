@@ -14,6 +14,7 @@ import md.enovaImport.sql.jdbc.ImportDAO;
 import md.enovaImport.sql.models.PdfElement;
 import md.enovaImport.utils.DialogUtils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 
@@ -42,10 +43,24 @@ public class PdfCreator {
             String importName = importDAO.getImportName(sendMail.getImportId());
             String fileName = "C:\\EMAIL\\" + importName + "\\" + sendMail.getName() + ".pdf";
 
-            System.out.println(sendMail.getPathFile());
+            if (sendMail.getPathFile().isEmpty()) {
+                File file = new File(fileName);
+                if (file.exists()) {
+                    for (int i = 1; i < 100; i++) {
+                        fileName = "C:\\EMAIL\\" + importName + "\\" + sendMail.getName() + "_" + i + ".pdf";
+                        if (new File(fileName).exists()) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
 
-            createPdf(fileName, sendMail, pdfElementList);
+                }
 
+                createPdf(fileName, sendMail, pdfElementList);
+            } else {
+                createPdf(fileName, sendMail, pdfElementList);
+            }
         } catch (DocumentException | java.io.IOException | SQLException e) {
             DialogUtils.errorDialog(e.getMessage());
         }
@@ -97,7 +112,7 @@ public class PdfCreator {
         document.add(codeParagraph);
         document.add(Chunk.NEWLINE);
 
-        Paragraph agreementAmount = new Paragraph("Kwota z umowy: "+df.format(sendMailFX.getAgreementAmount()));
+        Paragraph agreementAmount = new Paragraph("Kwota z umowy: " + df.format(sendMailFX.getAgreementAmount()));
         agreementAmount.setAlignment(Element.ALIGN_LEFT);
         document.add(agreementAmount);
 
