@@ -59,7 +59,7 @@ public class PdfCreator {
 
                 createPdf(fileName, sendMail, pdfElementList);
             } else {
-                createPdf(fileName, sendMail, pdfElementList);
+                createPdf(sendMail.getPathFile(), sendMail, pdfElementList);
             }
         } catch (DocumentException | java.io.IOException | SQLException e) {
             DialogUtils.errorDialog(e.getMessage());
