@@ -42,6 +42,8 @@ public class PdfCreator {
             String importName = importDAO.getImportName(sendMail.getImportId());
             String fileName = "C:\\EMAIL\\" + importName + "\\" + sendMail.getName() + ".pdf";
 
+            System.out.println(sendMail.getPathFile());
+
             createPdf(fileName, sendMail, pdfElementList);
 
         } catch (DocumentException | java.io.IOException | SQLException e) {

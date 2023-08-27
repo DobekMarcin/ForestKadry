@@ -11,15 +11,18 @@ import java.util.List;
 
 public class ImportDAO {
 
-    private String url = "jdbc:mysql://192.168.0.92:3306/import";
-    private String username = "admin";
-    private String password = "root";
+
+ //   private String url = "jdbc:mysql://192.168.0.92:3306/import";
+ //   private String username = "admin";
+  //  private String password = "root";
+
+    private static String url = "jdbc:mysql://127.0.0.1:3306/import";
+    private static String username = "root";
+    private static String password = "Tetragramaton123";
 
     public static void connectionTest() {
 
-        String url = "jdbc:mysql://192.168.0.92:3306/import";
-        String username = "admin";
-        String password = "root";
+
 
         System.out.println("Connecting database...");
 
