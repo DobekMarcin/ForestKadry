@@ -54,7 +54,6 @@ public class NewImportWindowController {
     public void setMainWindowController(MainWindowController mainWindowController) {
         this.mainWindowController = mainWindowController;
     }
-
     public void initialize() {
 
         importNameProperty.bindBidirectional(importName.textProperty());
@@ -71,6 +70,8 @@ public class NewImportWindowController {
 
         importDate.setText(strDate);
         importDate.setEditable(false);
+
+        importName.setFocusTraversable(true);
     }
 
     public void importFileButton() {
