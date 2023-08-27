@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EnovaExport>
+  <ExportTime>2023-07-13 08:18:52</ExportTime>
+  <AppVer>2304.0.0</AppVer>
+  <LibVer>1.0.300.0</LibVer>
+  <ListyPlac>
+    <ListaPlac>
+      <NumerListy>LPE/W2-1-4/2023/05/1</NumerListy>
+      <OpisListy>WSZOŁEK ANNA do  05.05.2023</OpisListy>
+      <DataListy>2023-05-10</DataListy>
+      <DataWyplaty>2023-05-10</DataWyplaty>
+      <OkresListyOd>2023-05-01</OkresListyOd>
+      <OkresListyDo>2023-05-31</OkresListyDo>
+      <KodWydzialu>W2-1-4</KodWydzialu>
+      <Zatwierdzona>True</Zatwierdzona>
+      <Wyplaty>
+        <Wyplata>
+          <NumerWyplaty>1</NumerWyplaty>
+          <KodPracownika>5154</KodPracownika>
+          <KodWydzialuKosztowego />
+          <ElementyWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Wynagrodzenie zasadnicze mies.</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>0</DniElementu>
+              <WartoscElementu>0.00</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>0.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>0.00</EmerytalnaPracownik>
+                <RentowaPracownik>0.00</RentowaPracownik>
+                <ChorobowaPracownik>0.00</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>0.00</EmerytalnaFirma>
+                <RentowaFirma>0.00</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>0.00</WypadkowaFirma>
+                <ZdrowotnaPracownik>0.00</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>0.00</PPKPracownik>
+                <PPKFirma>0.00</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Ekwiwalent za czas urlopu</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>0</DniElementu>
+              <WartoscElementu>5568.89</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>892.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>543.52</EmerytalnaPracownik>
+                <RentowaPracownik>83.53</RentowaPracownik>
+                <ChorobowaPracownik>136.44</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>543.52</EmerytalnaFirma>
+                <RentowaFirma>361.98</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>188.79</WypadkowaFirma>
+                <ZdrowotnaPracownik>432.49</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>111.38</PPKPracownik>
+                <PPKFirma>83.53</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Świad.rehabilitacyjne</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>5</DniElementu>
+              <WartoscElementu>376.45</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>0.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>0.00</EmerytalnaPracownik>
+                <RentowaPracownik>0.00</RentowaPracownik>
+                <ChorobowaPracownik>0.00</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>0.00</EmerytalnaFirma>
+                <RentowaFirma>0.00</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>0.00</WypadkowaFirma>
+                <ZdrowotnaPracownik>0.00</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>0.00</PPKPracownik>
+                <PPKFirma>0.00</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Składka KZP</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>0</DniElementu>
+              <WartoscElementu>0.00</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>0.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>0.00</EmerytalnaPracownik>
+                <RentowaPracownik>0.00</RentowaPracownik>
+                <ChorobowaPracownik>0.00</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>0.00</EmerytalnaFirma>
+                <RentowaFirma>0.00</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>0.00</WypadkowaFirma>
+                <ZdrowotnaPracownik>0.00</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>0.00</PPKPracownik>
+                <PPKFirma>0.00</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Składka PZU</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>0</DniElementu>
+              <WartoscElementu>-44.00</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>0.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>0.00</EmerytalnaPracownik>
+                <RentowaPracownik>0.00</RentowaPracownik>
+                <ChorobowaPracownik>0.00</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>0.00</EmerytalnaFirma>
+                <RentowaFirma>0.00</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>0.00</WypadkowaFirma>
+                <ZdrowotnaPracownik>0.00</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>0.00</PPKPracownik>
+                <PPKFirma>0.00</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+            <ElementWyplaty>
+              <NazwaElementu>Spłata pożyczki KZP</NazwaElementu>
+              <KodElementu />
+              <OkresElementuOd>2023-05-01</OkresElementuOd>
+              <OkresElementuDo>2023-05-05</OkresElementuDo>
+              <CzasElementu>0:00</CzasElementu>
+              <DniElementu>0</DniElementu>
+              <WartoscElementu>0.00</WartoscElementu>
+              <PodatkiSkladki>
+                <PodatekZaliczkaUS>0.00</PodatekZaliczkaUS>
+                <EmerytalnaPracownik>0.00</EmerytalnaPracownik>
+                <RentowaPracownik>0.00</RentowaPracownik>
+                <ChorobowaPracownik>0.00</ChorobowaPracownik>
+                <WypadkowaPracownik>0.00</WypadkowaPracownik>
+                <EmerytalnaFirma>0.00</EmerytalnaFirma>
+                <RentowaFirma>0.00</RentowaFirma>
+                <ChorobowaFirma>0.00</ChorobowaFirma>
+                <WypadkowaFirma>0.00</WypadkowaFirma>
+                <ZdrowotnaPracownik>0.00</ZdrowotnaPracownik>
+                <FP>0.00</FP>
+                <FGSP>0.00</FGSP>
+                <FEP>0.00</FEP>
+                <PPKPracownik>0.00</PPKPracownik>
+                <PPKFirma>0.00</PPKFirma>
+              </PodatkiSkladki>
+            </ElementWyplaty>
+          </ElementyWyplaty>
+        </Wyplata>
+      </Wyplaty>
+    </ListaPlac>
+  </ListyPlac>
+</EnovaExport>

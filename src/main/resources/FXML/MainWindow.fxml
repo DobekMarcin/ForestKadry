@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="primaryBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.MainWindowController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="%file">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#deleteDataFromDatabase" text="%delete.database" />
+              <MenuItem mnemonicParsing="false" onAction="#closeApp" text="%close">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edycja">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Pomoc">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <bottom>
+      <TextField fx:id="statusTextField" editable="false" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <BorderPane fx:id="borderPane" BorderPane.alignment="CENTER">
+         <top>
+            <HBox prefHeight="71.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="71.0" prefWidth="806.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <ToggleButton fx:id="importToggleButton" mnemonicParsing="false" onAction="#importWindow" prefHeight="75.0" prefWidth="75.0" selected="true">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="menuGroup" />
+                                 </toggleGroup>
+                                 <graphic>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icon/Import_icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton fx:id="elementDicToggleButton" mnemonicParsing="false" onAction="#elementDicWindow" prefHeight="75.0" prefWidth="75.0" toggleGroup="$menuGroup">
+                                 <graphic>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icon/elements.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#personListWindow" prefHeight="75.0" prefWidth="75.0" toggleGroup="$menuGroup">
+                                 <graphic>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icon/email_icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton mnemonicParsing="false" onAction="#sendEmailWindow" prefHeight="75.0" prefWidth="75.0" toggleGroup="$menuGroup">
+                                 <graphic>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icon/arroba_3059486.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </top>
+      </BorderPane>
+   </center>
+</BorderPane>
