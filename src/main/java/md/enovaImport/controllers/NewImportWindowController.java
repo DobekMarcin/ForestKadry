@@ -56,6 +56,7 @@ public class NewImportWindowController {
     }
     public void initialize() {
 
+        importDAO = new ImportDAO();
         importNameProperty.bindBidirectional(importName.textProperty());
         fileButton.disableProperty().bind(importNameProperty.isEmpty());
 
@@ -89,40 +90,50 @@ public class NewImportWindowController {
     }
 
     public void imporXML() {
-        readXmlSaxParser = new ReadXmlSaxParser();
-        try {
-            List<ListaPlac> listaPlac = readXmlSaxParser.getImportData(file.getAbsolutePath());
-            ImportModel importModel = new ImportModel();
-            importModel.setOpis(importNameProperty.getValue());
-            importModel.setDataImportu(new Date());
-            importDAO = new ImportDAO();
-            Integer importId = importDAO.getImportId();
-            importDAO.addNewImport(importModel, importId);
 
-            for (int i = 0; listaPlac.size() > i; i++) {
-                ListaPlac listaPlacTemp = listaPlac.get(i);
-                importDAO.addListaPlac(listaPlacTemp, i + 1, importId);
-                for (int x = 0; listaPlacTemp.getListaWyplat().size() > x; x++) {
-                    Wyplata wyplataTemp = listaPlacTemp.getListaWyplat().get(x);
-                    importDAO.addWyplata(wyplataTemp, i + 1, x + 1,importId);
-                    for (int y = 0; wyplataTemp.getElementWyplatyList().size() > y; y++) {
-                        ElementWyplaty elementWyplatyTemp = wyplataTemp.getElementWyplatyList().get(y);
-                        importDAO.addElementWyplaty(elementWyplatyTemp, x + 1, y + 1, i + 1,importId);
-                        for(int z = 0; elementWyplatyTemp.getPodatkiSkladkiList().size() > z;z++){
-                            PodatkiSkladki podatkiSkladkiTemp = elementWyplatyTemp.getPodatkiSkladkiList().get(z);
-                            importDAO.addPodatkiSkladki(podatkiSkladkiTemp,i+1,x+1,y+1,z+1,importId);
-                        }
+        Boolean checkname=false;
+        try {
+            checkname=importDAO.checkImportName(importNameProperty.getValue());
+        } catch (SQLException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        }
+if(checkname){
+    DialogUtils.informationDialog("Import o tej nazwie już istnieje! Zmień nazwę i zaimportuj ponownie!");
+}else {
+    readXmlSaxParser = new ReadXmlSaxParser();
+    try {
+        List<ListaPlac> listaPlac = readXmlSaxParser.getImportData(file.getAbsolutePath());
+        ImportModel importModel = new ImportModel();
+        importModel.setOpis(importNameProperty.getValue());
+        importModel.setDataImportu(new Date());
+        Integer importId = importDAO.getImportId();
+        importDAO.addNewImport(importModel, importId);
+
+        for (int i = 0; listaPlac.size() > i; i++) {
+            ListaPlac listaPlacTemp = listaPlac.get(i);
+            importDAO.addListaPlac(listaPlacTemp, i + 1, importId);
+            for (int x = 0; listaPlacTemp.getListaWyplat().size() > x; x++) {
+                Wyplata wyplataTemp = listaPlacTemp.getListaWyplat().get(x);
+                importDAO.addWyplata(wyplataTemp, i + 1, x + 1, importId);
+                for (int y = 0; wyplataTemp.getElementWyplatyList().size() > y; y++) {
+                    ElementWyplaty elementWyplatyTemp = wyplataTemp.getElementWyplatyList().get(y);
+                    importDAO.addElementWyplaty(elementWyplatyTemp, x + 1, y + 1, i + 1, importId);
+                    for (int z = 0; elementWyplatyTemp.getPodatkiSkladkiList().size() > z; z++) {
+                        PodatkiSkladki podatkiSkladkiTemp = elementWyplatyTemp.getPodatkiSkladkiList().get(z);
+                        importDAO.addPodatkiSkladki(podatkiSkladkiTemp, i + 1, x + 1, y + 1, z + 1, importId);
                     }
                 }
             }
-
-            DialogUtils.importConfirmation();
-            initialize();
-            mainWindowController.setImportWindow();
-
-        } catch (Exception e) {
-            DialogUtils.errorDialog(e.getMessage());
         }
+
+        DialogUtils.importConfirmation();
+        initialize();
+        mainWindowController.setImportWindow();
+
+    } catch (Exception e) {
+        DialogUtils.errorDialog(e.getMessage());
+    }
+}
     }
 
     public void backButton() {

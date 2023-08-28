@@ -12,13 +12,13 @@ import java.util.List;
 public class ImportDAO {
 
 
- //   private String url = "jdbc:mysql://192.168.0.92:3306/import";
- //   private String username = "admin";
-  //  private String password = "root";
+    private static String url = "jdbc:mysql://192.168.0.92:3306/import";
+    private static String username = "admin";
+    private static String password = "root";
 
-    private static String url = "jdbc:mysql://127.0.0.1:3306/import";
-    private static String username = "root";
-    private static String password = "Tetragramaton123";
+ //   private static String url = "jdbc:mysql://127.0.0.1:3306/import";
+  //  private static String username = "root";
+  //  private static String password = "Tetragramaton123";
 
     public static void connectionTest() {
 
@@ -39,8 +39,23 @@ public class ImportDAO {
         }
     }
 
+
+
     private Connection getConnectcion() throws SQLException {
         return DriverManager.getConnection(url, username, password);
+    }
+
+    public Boolean checkImportName(String importName) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Boolean check = false;
+        statement = connection.prepareStatement("Select count(*) as nameCount from import_list where opis=?");
+        statement.setString(1,importName);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=(rs.getInt("nameCount")>0 ? true:false);
+        connection.close();
+        return  check;
     }
 
     public String getEmail(Integer code) throws SQLException {
