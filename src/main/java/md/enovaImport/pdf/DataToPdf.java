@@ -188,10 +188,6 @@ public class DataToPdf {
 
             pdfElementList=importDAO.getElementtoPdf(pdfElementList,sendMailFX);
 
-          //  pdfElementList.forEach(element->{
-          //      System.out.println(element);
-          // });
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -6,19 +6,18 @@ import md.enovaImport.xml.models.*;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ImportDAO {
 
 
-    private static String url = "jdbc:mysql://192.168.0.92:3306/import";
-    private static String username = "admin";
-    private static String password = "root";
+ //   private static String url = "jdbc:mysql://192.168.0.92:3306/import";
+ //   private static String username = "admin";
+//    private static String password = "root";
 
- //   private static String url = "jdbc:mysql://127.0.0.1:3306/import";
-  //  private static String username = "root";
-  //  private static String password = "Tetragramaton123";
+    private static String url = "jdbc:mysql://127.0.0.1:3306/import";
+    private static String username = "root";
+    private static String password = "Tetragramaton123";
 
     public static void connectionTest() {
 
@@ -69,6 +68,19 @@ public class ImportDAO {
             email=rs.getString("email");
         connection.close();
         return  email;
+    }
+
+    public void updateSendEmailStatus(SendMailFX sendMailFX) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Update send_mail set czy_wyslano=? where id_importu=? and id_listy=? and id_wyplaty=? and kod=?");
+        statement.setBoolean(1, sendMailFX.getIsSend());
+        statement.setInt(2, sendMailFX.getImportId());
+        statement.setInt(3,sendMailFX.getListId());
+        statement.setInt(4,sendMailFX.getAmountId());
+        statement.setInt(5,sendMailFX.getCode());
+        statement.executeUpdate();
+        connection.close();
     }
 
     public void updateSendEmailFile(SendMailFX sendMailFX) throws SQLException {

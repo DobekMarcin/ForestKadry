@@ -191,7 +191,7 @@ public class SendMailFX {
         this.isFile.set(isFile);
     }
 
-    public boolean isIsSend() {
+    public boolean getIsSend() {
         return isSend.get();
     }
 

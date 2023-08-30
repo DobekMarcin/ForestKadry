@@ -179,23 +179,29 @@ public class SendEmailWindowController {
         sendEmailTableDeleteColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Button>("deleteButton"));
 
         sendEmailTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
-        addListenerToButtons();
+        addListenerToButtons(importId);
     }
 
-    private void addListenerToButtons() {
+    private void addListenerToButtons(Integer importId) {
         for (SendMailFX item : sendMailFXObservableList) {
             Button generateButton = item.getGenerateButton();
             Button viewButton = item.getViewButton();
-            Button emeilButton = item.getEmailButton();
+            Button emailButton = item.getEmailButton();
             Button deleteButton = item.getDeleteButton();
             generateButton.setText("Generuj");
             viewButton.setText("Podgląd");
-            emeilButton.setText("Email");
+            emailButton.setText("Email");
             deleteButton.setText("Usuń");
+
+            viewButton.setDisable(!item.isIsFile());
+            generateButton.setDisable(item.isIsFile());
+            emailButton.setDisable(!item.isIsFile() || item.getIsSend());
+            deleteButton.setDisable(!item.isIsFile());
 
             generateButton.setOnAction((actionEvent) -> {
                 PdfCreator pdfCreator = new PdfCreator();
                 pdfCreator.createPdf(item);
+                loadDataButton();
             });
 
             viewButton.setOnAction((actionEvent) -> {
@@ -211,8 +217,9 @@ public class SendEmailWindowController {
                     DialogUtils.informationDialog("Plik nie istnieje!");
                 }
             });
-            emeilButton.setOnAction((actionEvent) -> {
+            emailButton.setOnAction((actionEvent) -> {
                 sendEmail(item);
+                loadDataButton();
             });
         }
     }
@@ -251,7 +258,7 @@ public class SendEmailWindowController {
         String content = "W załączniku znajduje się wydruk listy płac. " +
                 "\nProszę nie odpowiadać na tę wiadomość. " +
                 "\nEwentualne uwagi prosimy zgłaszać w formie pisemnej do działu Kadr i Płac." +
-                "\n\n--------------------------" +
+                "\n\n--------------------------\n" +
                 "Forest Gorlice sp. z o.o.";
 
         Properties props = new Properties();
@@ -273,10 +280,14 @@ public class SendEmailWindowController {
         Session session = getInstance(props, auth);
         try {
             EmailUtil.sendAttachmentEmail(session, mailTo, "Lista płac: " + sendMailFX.getName(), content, sendMailFX);
+            sendMailFX.setIsSend(true);
+            importDAO.updateSendEmailStatus(sendMailFX);
             DialogUtils.informationDialog("Wiadomość wysłana poprawnie!");
         } catch (MessagingException e) {
             DialogUtils.errorDialog(e.getMessage());
         } catch (UnsupportedEncodingException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        } catch (SQLException e) {
             DialogUtils.errorDialog(e.getMessage());
         }
     }
