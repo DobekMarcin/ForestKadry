@@ -748,6 +748,7 @@ public class ImportDAO {
         connection.close();
     }
 
+
     public void deletePodatkiSkladkiById(Integer id) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
