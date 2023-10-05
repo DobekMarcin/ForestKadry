@@ -15,6 +15,7 @@ public class ImportDAO {
     private static String username = "admin";
     private static String password = "root";
 
+    //TEST
   //  private static String url = "jdbc:mysql://127.0.0.1:3306/import";
  //   private static String username = "root";
  //   private static String password = "Tetragramaton123";
