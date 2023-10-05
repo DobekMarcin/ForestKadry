@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.SendEmailWindowController">
+<BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.SendEmailWindowController">
    <center>
       <TableView fx:id="sendEmailTable" editable="true" BorderPane.alignment="CENTER">
         <columns>
@@ -36,8 +36,8 @@
    <bottom>
       <HBox alignment="BASELINE_RIGHT" prefWidth="248.0" spacing="20.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#test" text="%email.generateall" />
-            <Button mnemonicParsing="false" text="%email.sendall" />
+            <Button fx:id="generateAll" mnemonicParsing="false" onAction="#generateAllOnAction" text="%email.generateall" />
+            <Button fx:id="sendAll" mnemonicParsing="false" onAction="#sendAllOnAction" text="%email.sendall" />
          </children>
          <BorderPane.margin>
             <Insets left="10.0" right="10.0" />

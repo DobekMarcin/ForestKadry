@@ -17,7 +17,7 @@ public class ImportDAO {
 
     private static String url = "jdbc:mysql://127.0.0.1:3306/import";
     private static String username = "root";
-    private static String password = "Tetragramaton123";
+    private static String password = "Reinawen123";
 
     public static void connectionTest() {
 
@@ -753,6 +753,18 @@ public class ImportDAO {
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from podatkiskladki where id_importu=?");
         statement.setInt(1,id);
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public void updateSendMailDeletePDF(SendMailFX item) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Update send_mail set czy_jest_plik=0, czy_wyslano=0, sciezka_do_pliku='' where id_importu=? and id_listy=? and id_wyplaty=? and kod=?");
+        statement.setInt(1, item.getImportId());
+        statement.setInt(2, item.getListId());
+        statement.setInt(3,item.getAmountId());
+        statement.setInt(4,item.getCode());
         statement.executeUpdate();
         connection.close();
     }

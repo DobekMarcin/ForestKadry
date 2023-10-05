@@ -2,6 +2,7 @@ package md.enovaImport.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -42,6 +43,10 @@ public class SendEmailWindowController {
     private final ObservableList<SendMailFX> sendMailFXObservableList = FXCollections.observableArrayList();
     private final String EMAIL = "place@forest.gorlice.pl";
     private final String EMAIL_PASSWORD = "4S+$M22a!'$pjnU";
+    @FXML
+    private Button generateAll;
+    @FXML
+    private Button sendAll;
     @FXML
     private TableColumn sendEmailTableIdListColumn;
     @FXML
@@ -111,12 +116,6 @@ public class SendEmailWindowController {
             }
         });
     }
-
-    public void test() {
-
-
-    }
-
 
     private void updatePersonDicObservableList(Integer importId) {
         List<SendMail> sendMailsList = null;
@@ -218,8 +217,25 @@ public class SendEmailWindowController {
                 }
             });
             emailButton.setOnAction((actionEvent) -> {
-                sendEmail(item);
+                try {
+                    sendEmail(item);
+                    DialogUtils.informationDialog("Wiadomość wysłana poprawnie!");
+                } catch (SQLException | MessagingException | UnsupportedEncodingException e) {
+                    DialogUtils.errorDialog(e.getMessage());
+                }
                 loadDataButton();
+            });
+            deleteButton.setOnAction(actionEvent -> {
+                try {
+                    File file = new File(item.getPathFile());
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    importDAO.updateSendMailDeletePDF(item);
+                    loadDataButton();
+                } catch (SQLException e) {
+                    DialogUtils.errorDialog(e.getMessage());
+                }
             });
         }
     }
@@ -253,7 +269,7 @@ public class SendEmailWindowController {
         }
     }
 
-    private void sendEmail(SendMailFX sendMailFX) {
+    private void sendEmail(SendMailFX sendMailFX) throws SQLException, MessagingException, UnsupportedEncodingException {
 
         String content = "W załączniku znajduje się wydruk listy płac. " +
                 "\nProszę nie odpowiadać na tę wiadomość. " +
@@ -278,17 +294,34 @@ public class SendEmailWindowController {
             }
         };
         Session session = getInstance(props, auth);
-        try {
             EmailUtil.sendAttachmentEmail(session, mailTo, "Lista płac: " + sendMailFX.getName(), content, sendMailFX);
             sendMailFX.setIsSend(true);
             importDAO.updateSendEmailStatus(sendMailFX);
-            DialogUtils.informationDialog("Wiadomość wysłana poprawnie!");
-        } catch (MessagingException e) {
-            DialogUtils.errorDialog(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            DialogUtils.errorDialog(e.getMessage());
-        } catch (SQLException e) {
+    }
+
+    public void generateAllOnAction() {
+        for (SendMailFX item : sendMailFXObservableList) {
+            if(item.getPathFile().isEmpty()) {
+                PdfCreator pdfCreator = new PdfCreator();
+                pdfCreator.createPdf(item);
+            }
+        }
+        loadDataButton();
+        if(!sendMailFXObservableList.isEmpty()){
+        DialogUtils.informationDialog("Wygenerowano pliki!");}
+    }
+
+    public void sendAllOnAction() {
+        try {
+        for (SendMailFX item : sendMailFXObservableList) {
+            if(!item.getIsSend() && !item.getPathFile().isEmpty())
+                sendEmail(item);
+        }
+        } catch (SQLException | MessagingException | UnsupportedEncodingException e) {
             DialogUtils.errorDialog(e.getMessage());
         }
+        loadDataButton();
+        if(!sendMailFXObservableList.isEmpty()){
+        DialogUtils.informationDialog("Wiadomości wysłane poprawnie!");}
     }
 }
