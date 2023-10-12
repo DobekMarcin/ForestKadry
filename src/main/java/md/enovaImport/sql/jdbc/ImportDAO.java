@@ -11,9 +11,9 @@ import java.util.List;
 public class ImportDAO {
 
 
-    private static String url = "jdbc:mysql://192.168.0.92:3306/import";
-    private static String username = "admin";
-    private static String password = "root";
+    private final static String url = "jdbc:mysql://192.168.0.92:3306/import";
+    private final static String username = "admin";
+    private final static String password = "root";
 
     //TEST
   //  private static String url = "jdbc:mysql://127.0.0.1:3306/import";
