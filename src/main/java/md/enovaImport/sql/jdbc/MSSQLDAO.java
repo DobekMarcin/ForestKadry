@@ -14,13 +14,7 @@ public class MSSQLDAO {
 
     public static void main(String[] args) throws SQLException {
 
-        System.out.println("test");
-
-        MSSQLDAO ms = new MSSQLDAO();
-
-        ms.
-
-      /*  Connection conn = null;
+       Connection conn = null;
 
         try {
 
@@ -43,7 +37,7 @@ public class MSSQLDAO {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-        }*/
+        }
 
 
     }
@@ -68,16 +62,17 @@ public class MSSQLDAO {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         List<Person> personList = new ArrayList<Person>();
-        statement = connection.prepareStatement(" SELECT A.id as id,A.kod,A.Imie||' '||A.nazwisko as dane,C.KontaktEMAIL as email" + " FROM eno_Forest.dbo.Pracownicy A " + " left join eno_Forest.dbo.PracHistorie B on A.ID=B.Pracownik " + " left join eno_Forest.dbo.PracHistorie2 C on C.id=B.ID " + " where GETDATE() BETWEEN B.AktualnoscFrom AND B.AktualnoscTo;");
+        statement = connection.prepareStatement(" SELECT A.id as id,A.kod as kod,A.Imie+' '+A.nazwisko as dane,C.KontaktEMAIL as email" + " FROM eno_Forest.dbo.Pracownicy A " + " left join eno_Forest.dbo.PracHistorie B on A.ID=B.Pracownik " + " left join eno_Forest.dbo.PracHistorie2 C on C.id=B.ID " + " where GETDATE() BETWEEN B.AktualnoscFrom AND B.AktualnoscTo;");
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             Person person = new Person();
-            person.setCode(rs.getInt("id"));
+            person.setCode(rs.getInt("kod"));
             person.setEmail(rs.getString("email"));
             person.setSend(!person.getEmail().isEmpty());
             person.setName(rs.getString("dane"));
             personList.add(person);
         }
+        connection.close();
         return personList;
     }
 

@@ -2,6 +2,7 @@ package md.enovaImport.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ import javafx.stage.Stage;
 import md.enovaImport.Stage.MainStage;
 import md.enovaImport.modelsFX.PersonFX;
 import md.enovaImport.sql.jdbc.ImportDAO;
+import md.enovaImport.sql.jdbc.MSSQLDAO;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 import md.enovaImport.sql.models.Person;
@@ -46,6 +48,7 @@ public class PersonListWindowController {
     private MainWindowController mainWindowController;
     private final ObservableList<PersonFX> personDicObservableList = FXCollections.observableArrayList();
     private final ImportDAO importDAO = new ImportDAO();
+    private final MSSQLDAO mssqldao = new MSSQLDAO();
 
 
     public void initialize() {
@@ -146,5 +149,27 @@ public class PersonListWindowController {
 
     public void setMainWindowController(MainWindowController mainWindowController) {
         this.mainWindowController = mainWindowController;
+    }
+
+    public void updatePersonData() {
+
+        try {
+            List<Person> personList = mssqldao.getPersonsData();
+            importDAO.deleteAllPersons();
+
+            personList.forEach(e->{
+                try {
+                    importDAO.addNewPersonFromEnova(e);
+                } catch (SQLException ex) {
+                    DialogUtils.errorDialog("Błąd pobierania danych z enova!");
+                }
+            });
+
+            DialogUtils.informationDialog("Poprawnie zaaktualizowano dane!");
+        } catch (SQLException e) {
+            DialogUtils.errorDialog("Błąd pobierania danych z enova!");
+        }
+        updatePersonDicObservableList();
+        personDicTable.refresh();
     }
 }

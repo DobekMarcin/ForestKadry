@@ -45,6 +45,15 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public void deleteAllPersons() throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("delete from lista_pracownikow;");
+        statement.executeUpdate();
+        connection.close();
+    }
+
+
     public Boolean checkImportName(String importName) throws SQLException {
         PreparedStatement statement=null;
         Connection connection = getConnectcion();
@@ -262,6 +271,19 @@ public class ImportDAO {
         statement.executeUpdate();
         connection.close();
     }
+
+    public void addNewPersonFromEnova(Person person) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("INSERT INTO lista_pracownikow(kod_pracownika,imie_nazwisko,email,czy_wyslac) VALUES (?,?,?,?)");
+        statement.setInt(1, person.getCode());
+        statement.setString(2,person.getName());
+        statement.setString(3,person.getEmail());
+        statement.setBoolean(4,person.getSend());
+        statement.executeUpdate();
+        connection.close();
+    }
+
     public void updateDictionaryPersonEmail(Integer personCode, String email) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();

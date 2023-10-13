@@ -38,4 +38,14 @@ public class Person {
     public void setSend(Boolean send) {
         this.send = send;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "code=" + code +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", send=" + send +
+                '}';
+    }
 }

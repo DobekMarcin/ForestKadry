@@ -31,6 +31,7 @@ public class MainWindowController {
     private static final String ELEMENT_DIC_WINDOW="/FXML/ElementDicWindow.fxml";
     private static final String PERSON_LIST_WINDOW="/FXML/PersonListWindow.fxml";
     private static final String EMAIL_GENERATE_WINDOW="/FXML/SendEmailWindow.fxml";
+    private static final String BOOKKEEPING_PATTERN_WINDOW="/FXML/BookkeepingWindow.fxml";
 
     @FXML
     private TextField statusTextField;
@@ -198,6 +199,19 @@ public class MainWindowController {
             setStatus("Generuj email");
             Pane bordPane = fxmlLoader.load();
             SendEmailWindowController sendEmailWindowController = fxmlLoader.getController();
+            borderPane.setCenter(bordPane);
+        } catch (IOException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        }
+    }
+
+    public void bookkeepingPatterns(ActionEvent actionEvent) {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainStage.class.getResource((BOOKKEEPING_PATTERN_WINDOW)));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+        try {
+            setStatus("Wzorce księgowe");
+            Pane bordPane = fxmlLoader.load();
+            BookkeepingWindowController bookkeepingWindowController = fxmlLoader.getController();
             borderPane.setCenter(bordPane);
         } catch (IOException e) {
             DialogUtils.errorDialog(e.getMessage());

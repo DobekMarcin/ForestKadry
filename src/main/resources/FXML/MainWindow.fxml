@@ -90,6 +90,15 @@
                                     </ImageView>
                                  </graphic>
                               </ToggleButton>
+                              <ToggleButton mnemonicParsing="false" onAction="#bookkeepingPatterns" prefHeight="75.0" prefWidth="75.0" toggleGroup="$menuGroup">
+                                 <graphic>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icon/book1.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
                            </children>
                         </HBox>
                      </children>
