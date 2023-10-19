@@ -45,6 +45,98 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public List<PaylistPattern> getBookKeepingPayListPattern(Integer importId) throws SQLException {
+        List<PaylistPattern> paylistPatterns = new ArrayList<>();
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("SELECT A.id_importu,A.id_listy,B.numerListy,B.opisListy,B.dataListy,B.dataWyplaty,B.okresListyOd,B.okresListyDo,B.kodWydzialu,B.zatwierdzona,A.id_wzorca,C.nazwa_wzorca, A.zaksiegowana " +
+                "FROM lista_plac_wzorce A left join lista_plac B on B.id_importu=A.id_importu and B.id_listy=A.id_listy left join wzorce_ksiegowania C on C.id=A.id_wzorca where A.id_importu=? order by A.id_listy");
+        statement.setInt(1,importId);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            PaylistPattern paylistPattern = new PaylistPattern();
+            paylistPattern.setImportId(rs.getInt("id_importu"));
+            paylistPattern.setIdList(rs.getInt("id_listy"));
+            paylistPattern.setNumberList(rs.getString("numerListy"));
+            paylistPattern.setDescriptionList(rs.getString("opisListy"));
+            paylistPattern.setDateList(rs.getDate("dataListy"));
+            paylistPattern.setDatePayment(rs.getDate("dataWyplaty"));
+            paylistPattern.setDateFrom(rs.getDate("okresListyOd"));
+            paylistPattern.setDateTo(rs.getDate("okresListyDo"));
+            paylistPattern.setDepartmentCode(rs.getString("kodWydzialu"));
+            paylistPattern.setAgreeList(rs.getBoolean("zatwierdzona"));
+            paylistPattern.setBookKeepingPatternType(rs.getInt("id_wzorca"));
+            paylistPattern.setBookKeepingPatterntTypeName(rs.getString("nazwa_wzorca"));
+            paylistPattern.setBook(rs.getBoolean("zaksiegowana"));
+
+            paylistPatterns.add(paylistPattern);
+        }
+        connection.close();
+        return paylistPatterns;
+    }
+
+    public void generateBookKeepingPatternList(Integer idImport) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Insert into lista_plac_wzorce (id_importu,id_listy,id_wzorca,zaksiegowana) Select id_importu,id_listy,0,false from lista_plac where id_importu=? and id_listy not in (Select id_listy from lista_plac_wzorce where id_importu=?)");
+        statement.setInt(1, idImport);
+        statement.setInt(2, idImport);
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public void deleteBookKeepingPatternById(Integer id) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from wzorce_ksiegowania where id=?");
+        statement.setInt(1,id);
+        statement.executeUpdate();
+        connection.close();
+    }
+    public void addNewBookKeepingPattern(BookKeepingPatterns bookKeepingPatterns) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("INSERT INTO wzorce_ksiegowania(id,nazwa_wzorca,typ_wzorca,uwagi) VALUES ((Select B.idek from (Select coalesce(max(id+1),1) as idek from wzorce_ksiegowania) B),?,?,?);");
+        statement.setString(1, bookKeepingPatterns.getPatterName());
+        statement.setInt(2,bookKeepingPatterns.getPatternType());
+        statement.setString(3,bookKeepingPatterns.getPatternComment());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public List<BookKeepingPatterns> getBookKeepingPatterns() throws SQLException {
+        List<BookKeepingPatterns> bookKeepingPatternsList = new ArrayList<>();
+        Connection connection = getConnectcion();
+        Statement statement=connection.createStatement();
+        ResultSet rs=statement.executeQuery("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id;");
+        while(rs.next()){
+            BookKeepingPatterns bookKeepingPatterns = new BookKeepingPatterns();
+            bookKeepingPatterns.setId(rs.getInt("id"));
+            bookKeepingPatterns.setPatterName(rs.getString("nazwa_wzorca"));
+            bookKeepingPatterns.setPatternType(rs.getInt("typ_wzorca"));
+            bookKeepingPatterns.setPatternTypeName(rs.getString("nazwa_typu"));
+            bookKeepingPatterns.setPatternComment(rs.getString("uwagi"));
+            bookKeepingPatternsList.add(bookKeepingPatterns);
+        }
+        connection.close();
+        return bookKeepingPatternsList;
+    }
+
+    public List<BookKeepingPatternType> getBookKeepingPatternsType() throws SQLException {
+        List<BookKeepingPatternType> bookKeepingPatternTypes = new ArrayList<>();
+        Connection connection = getConnectcion();
+        Statement statement=connection.createStatement();
+        ResultSet rs=statement.executeQuery("Select id,nazwa_typu from typy_ksiegowania order by id;");
+        while(rs.next()){
+            BookKeepingPatternType bookKeepingPatterns = new BookKeepingPatternType();
+            bookKeepingPatterns.setId(rs.getInt("id"));
+            bookKeepingPatterns.setName(rs.getString("nazwa_typu"));
+            bookKeepingPatternTypes.add(bookKeepingPatterns);
+        }
+        connection.close();
+        return bookKeepingPatternTypes;
+    }
+
     public void deleteAllPersons() throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
@@ -311,10 +403,10 @@ public class ImportDAO {
         ResultSet rs=statement.executeQuery("SELECT kod_pracownika,imie_nazwisko,email,czy_wyslac FROM import.lista_pracownikow order by imie_nazwisko");
         while(rs.next()){
             Person person = new Person();
-           person.setCode(rs.getInt("kod_pracownika"));
-           person.setName(rs.getString("imie_nazwisko"));
-           person.setEmail(rs.getString("email"));
-           person.setSend(rs.getBoolean("czy_wyslac"));
+            person.setCode(rs.getInt("kod_pracownika"));
+            person.setName(rs.getString("imie_nazwisko"));
+            person.setEmail(rs.getString("email"));
+            person.setSend(rs.getBoolean("czy_wyslac"));
             personList.add(person);
         }
         connection.close();

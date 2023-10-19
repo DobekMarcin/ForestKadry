@@ -21,6 +21,10 @@ public class SendMailFX {
     private SimpleStringProperty paymentDate = new SimpleStringProperty();
     private SimpleStringProperty listDate = new SimpleStringProperty();
     private SimpleDoubleProperty agreementAmount = new SimpleDoubleProperty();
+    private Button generateButton = new Button();
+    private Button viewButton = new Button();
+    private Button emailButton = new Button();
+    private Button deleteButton = new Button();
 
     public double getAgreementAmount() {
         return agreementAmount.get();
@@ -58,10 +62,7 @@ public class SendMailFX {
         this.listDate.set(listDate);
     }
 
-    private Button generateButton = new Button();
-    private Button viewButton = new Button();
-    private Button emailButton = new Button();
-    private Button deleteButton = new Button();
+
 
     public int getAmountId() {
         return amountId.get();

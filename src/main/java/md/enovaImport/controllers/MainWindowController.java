@@ -32,6 +32,7 @@ public class MainWindowController {
     private static final String PERSON_LIST_WINDOW="/FXML/PersonListWindow.fxml";
     private static final String EMAIL_GENERATE_WINDOW="/FXML/SendEmailWindow.fxml";
     private static final String BOOKKEEPING_PATTERN_WINDOW="/FXML/BookkeepingWindow.fxml";
+    private static final String BOOKKEEPING_LIST_PATTERN="/FXML/ListPatternWindow.fxml";
 
     @FXML
     private TextField statusTextField;
@@ -212,6 +213,19 @@ public class MainWindowController {
             setStatus("Wzorce księgowe");
             Pane bordPane = fxmlLoader.load();
             BookkeepingWindowController bookkeepingWindowController = fxmlLoader.getController();
+            borderPane.setCenter(bordPane);
+        } catch (IOException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        }
+    }
+
+    public void listPatterns() {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainStage.class.getResource((BOOKKEEPING_LIST_PATTERN)));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+        try {
+            setStatus("Wzorce księgowania list płac");
+            Pane bordPane = fxmlLoader.load();
+            ListPatternWindowController listPatternWindowController = fxmlLoader.getController();
             borderPane.setCenter(bordPane);
         } catch (IOException e) {
             DialogUtils.errorDialog(e.getMessage());

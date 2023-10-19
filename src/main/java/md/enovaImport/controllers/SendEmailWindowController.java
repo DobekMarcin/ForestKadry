@@ -97,7 +97,7 @@ public class SendEmailWindowController {
             final Label labelData = new Label();
 
             {
-                gridPane.getColumnConstraints().addAll(new ColumnConstraints(10, 30, 10), new ColumnConstraints(100, 100, 100));
+                gridPane.getColumnConstraints().addAll(new ColumnConstraints(10, 30, 10), new ColumnConstraints(200, 200, 100));
                 gridPane.add(labelId, 0, 1);
                 gridPane.add(labelOpis, 1, 1);
             }
@@ -147,7 +147,6 @@ public class SendEmailWindowController {
     public void loadDataButton() {
         try {
             ImportModelFX selectedImportModelFX = (ImportModelFX) importComboBox.getSelectionModel().getSelectedItem();
-            Boolean checkFlag = null;
             if (selectedImportModelFX != null) {
                 Integer importId = selectedImportModelFX.getId();
                 importDAO.generateEmailList(importId);
