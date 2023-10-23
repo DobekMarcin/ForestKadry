@@ -19,13 +19,13 @@
             <columns>
                 <TableColumn fx:id="listTableImportId" prefWidth="70.0" text="%bookkeeping.list.importid" />
                 <TableColumn fx:id="listTableListId" prefWidth="50.0" text="%bookkeeping.list.listid" />
-                <TableColumn fx:id="listTableListName" prefWidth="200.0" text="%bookkeeping.list.listname" />
-            <TableColumn fx:id="listTableDescriptionList" prefWidth="150.0" text="%bookkeeping.list.description" />
-                <TableColumn fx:id="listTableListDateColumn" text="%bookkeeping.list.data" />
+                <TableColumn fx:id="listTableListName" prefWidth="130.0" text="%bookkeeping.list.listname" />
+            <TableColumn fx:id="listTableDescriptionList" prefWidth="130.0" text="%bookkeeping.list.description" />
+                <TableColumn fx:id="listTableListDateColumn" prefWidth="75.0" text="%bookkeeping.list.data" />
                 <TableColumn fx:id="listTableCodeList" prefWidth="65.0" text="%bookkeeping.list.code" />
                 <TableColumn fx:id="listTableAgree" prefWidth="50.0" text="%bookkeeping.list.agree" />
-                <TableColumn fx:id="listTableComboBox" prefWidth="150.0" text="%bookkeeping.list.typename" />
-            <TableColumn fx:id="listTableBookButton" prefWidth="75.0" text="%bookkeeping.list.book" />
+                <TableColumn fx:id="listTableComboBox" prefWidth="130.0" text="%bookkeeping.list.typename" />
+            <TableColumn fx:id="listTableBookButton" prefWidth="60.0" text="%bookkeeping.list.book" />
             </columns>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -21,6 +21,8 @@ import md.enovaImport.sql.models.SimplePerson;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 
+import java.awt.*;
+import java.awt.print.Book;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -30,8 +32,11 @@ public class BookkeepingWindowController {
 
 
     private static final String BOOKKEEPING_ADD_PATTERN_DIALOG_WINDOW = "/FXML/BookkeepingAddPatterDialogWindow.fxml";
+    private static final String BOOKKEEPING_PATTERN_POSITION="/FXML/BookKeepingPatternPositionWindow.fxml";
     private final ImportDAO importDAO = new ImportDAO();
     private final ObservableList<BookKeepingPatternsFX> bookKeepingPatternsFXES = FXCollections.observableArrayList();
+    @FXML
+    private TableColumn bookKeepingPatternTypeButtonPositionColumn;
     @FXML
     private TableView booKeepingTable;
     @FXML
@@ -62,9 +67,42 @@ public class BookkeepingWindowController {
             bookKeepingpatternColumn.setCellValueFactory(new PropertyValueFactory<BookKeepingPatternsFX, String>("patternName"));
             bookKeepingPatternTypeColumn.setCellValueFactory(new PropertyValueFactory<BookKeepingPatternsFX, Integer>("patternType"));
             bookKeepingPatternTypeNameColumn.setCellValueFactory(new PropertyValueFactory<BookKeepingPatternsFX, String>("patternTypeName"));
+            bookKeepingPatternTypeButtonPositionColumn.setCellValueFactory(new PropertyValueFactory<BookKeepingPatternsFX, Button>("bookKeepingPositionButton"));
             booKeepingTable.setItems(bookKeepingPatternsFXES);
 
             booKeepingTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
+
+            bookKeepingPatternsFXES.forEach(e->{
+                e.getBookKeepingPositionButton().setText("Pozycje");
+                e.getBookKeepingPositionButton().setOnAction(handler->{
+
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(BOOKKEEPING_PATTERN_POSITION));
+                    fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+                    try {
+                        Parent parent = fxmlLoader.load();
+                        BookKeepingPatternPositionWindowController bookKeepingPatternPositionWindowController = fxmlLoader.getController();
+
+
+                        Scene scene = new Scene(parent);
+                        Stage stage = new Stage();
+                        stage.setTitle("Pozycje wzorca");
+                        stage.setResizable(false);
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        stage.setScene(scene);
+                        bookKeepingPatternPositionWindowController.setStage(stage);
+                        bookKeepingPatternPositionWindowController.setBookKeepingPatternsFX(e);
+                          stage.showAndWait();
+                      //  bookKeepingPatternsFXES.clear();
+                      //  initialize();
+
+                    } catch (IOException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                });
+
+
+
+            });
 
         } catch (SQLException e) {
             DialogUtils.errorDialog("Nie można odczytać danych z bazy!");
@@ -94,8 +132,6 @@ public class BookkeepingWindowController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     public MainWindowController getMainWindowController() {

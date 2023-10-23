@@ -119,7 +119,7 @@ public class ListPatternWindowController {
             final Label labelData = new Label();
 
             {
-                gridPane.getColumnConstraints().addAll(new ColumnConstraints(20, 20, 10), new ColumnConstraints(200, 200, 100));
+                gridPane.getColumnConstraints().addAll(new ColumnConstraints(20, 20, 10), new ColumnConstraints(100, 100, 100));
                 gridPane.add(labelId, 0, 1);
                 gridPane.add(labelOpis, 1, 1);
             }
