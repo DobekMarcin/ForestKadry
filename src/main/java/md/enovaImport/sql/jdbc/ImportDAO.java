@@ -1,5 +1,6 @@
 package md.enovaImport.sql.jdbc;
 
+import md.enovaImport.modelsFX.PayListPatternFX;
 import md.enovaImport.modelsFX.SendMailFX;
 import md.enovaImport.sql.models.*;
 import md.enovaImport.xml.models.*;
@@ -45,6 +46,37 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+
+    public BookKeepingPatterns getBookKeepingPatternsById(Integer id) throws SQLException {
+        BookKeepingPatterns bookKeepingPatterns=null;
+        Connection connection = getConnectcion();
+        PreparedStatement statement;
+        statement= connection.prepareStatement("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id where A.id=?;");
+        statement.setInt(1,id);
+        ResultSet rs=statement.executeQuery();
+        while(rs.next()){
+            bookKeepingPatterns = new BookKeepingPatterns();
+            bookKeepingPatterns.setId(rs.getInt("id"));
+            bookKeepingPatterns.setPatterName(rs.getString("nazwa_wzorca"));
+            bookKeepingPatterns.setPatternType(rs.getInt("typ_wzorca"));
+            bookKeepingPatterns.setPatternTypeName(rs.getString("nazwa_typu"));
+            bookKeepingPatterns.setPatternComment(rs.getString("uwagi"));
+
+        }
+        connection.close();
+        return bookKeepingPatterns;
+    }
+
+    public void updatePayListPattern(PayListPatternFX payListPatternFX) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Update lista_plac_wzorce set id_wzorca=? where id_importu=? and id_listy=?");
+        statement.setInt(1, payListPatternFX.getBookKeepingPatternType());
+        statement.setInt(2, payListPatternFX.getImportId());
+        statement.setInt(3,payListPatternFX.getIdList());
+        statement.executeUpdate();
+        connection.close();
+    }
     public List<PaylistPattern> getBookKeepingPayListPattern(Integer importId) throws SQLException {
         List<PaylistPattern> paylistPatterns = new ArrayList<>();
         PreparedStatement statement;

@@ -1,5 +1,7 @@
 package md.enovaImport.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,10 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import md.enovaImport.modelsFX.ImportModelFX;
-import md.enovaImport.modelsFX.PayListPatternFX;
-import md.enovaImport.modelsFX.SendMailFX;
+import md.enovaImport.modelsFX.*;
 import md.enovaImport.sql.jdbc.ImportDAO;
+import md.enovaImport.sql.models.BookKeepingPatterns;
 import md.enovaImport.sql.models.ImportModel;
 import md.enovaImport.sql.models.PaylistPattern;
 import md.enovaImport.sql.models.SendMail;
@@ -18,38 +19,39 @@ import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListPatternWindowController {
 
+    private final ObservableList<PayListPatternFX> payListPatternFXES = FXCollections.observableArrayList();
+    private final ObservableList<ImportModelFX> importModelFXES = FXCollections.observableArrayList();
+    private final ImportDAO importDAO = new ImportDAO();
     @FXML
-    private TableView listTable;
+    private TableColumn listTableDescriptionList;
     @FXML
-    private TableColumn listTableId;
+    private TableColumn listTableImportId;
     @FXML
-    private TableColumn listTableNrColumn;
+    private TableColumn listTableListId;
     @FXML
-    private TableColumn listTableDescriptionColumn;
+    private TableColumn listTableListName;
     @FXML
     private TableColumn listTableListDateColumn;
     @FXML
-    private TableColumn listTablePaymentDateColumn;
+    private TableColumn listTableCodeList;
     @FXML
-    private TableColumn listTableDateFromColumn;
+    private TableColumn listTableAgree;
     @FXML
-    private TableColumn listTableDateToColumn;
+    private TableColumn listTableComboBox;
     @FXML
-    private TableColumn listTableCodeColumn;
+    private TableColumn listTableBookButton;
     @FXML
-    private TableColumn listTableAgreeColumn;
+    private TableView listTable;
     @FXML
     private ComboBox importComboBox;
-
-    private final ObservableList<PayListPatternFX> payListPatternFXES = FXCollections.observableArrayList();
-    private ImportDAO importDAO = new ImportDAO();
     private List<ImportModel> importList;
-    private final ObservableList<ImportModelFX> importModelFXES = FXCollections.observableArrayList();
-    public void initialize(){
+
+    public void initialize() {
         try {
             importList = importDAO.getImportList();
         } catch (SQLException e) {
@@ -92,6 +94,79 @@ public class ListPatternWindowController {
         });
     }
 
+    public void initializeComboBox(PayListPatternFX payListPatternFX) {
+        ComboBox comboBox = payListPatternFX.getBookKeepingPatternsComboBox();
+        ObservableList<BookKeepingPatternsFX> bookKeepingPatternsFXES = FXCollections.observableArrayList();
+        List<BookKeepingPatterns> bookKeepingPatterns = new ArrayList<>();
+        try {
+            bookKeepingPatterns = importDAO.getBookKeepingPatterns();
+        } catch (SQLException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        }
+        bookKeepingPatterns.forEach(element -> {
+            BookKeepingPatternsFX bookKeepingPatternsFX = new BookKeepingPatternsFX();
+            bookKeepingPatternsFX.setId(element.getId());
+            bookKeepingPatternsFX.setPatternName(element.getPatterName());
+            bookKeepingPatternsFX.setPatternType(element.getPatternType());
+            bookKeepingPatternsFX.setPatternComment(element.getPatternComment());
+            bookKeepingPatternsFXES.add(bookKeepingPatternsFX);
+        });
+        comboBox.getItems().addAll(bookKeepingPatternsFXES);
+        comboBox.setCellFactory(cell -> new ListCell<BookKeepingPatternsFX>() {
+            final GridPane gridPane = new GridPane();
+            final Label labelId = new Label();
+            final Label labelOpis = new Label();
+            final Label labelData = new Label();
+
+            {
+                gridPane.getColumnConstraints().addAll(new ColumnConstraints(20, 20, 10), new ColumnConstraints(200, 200, 100));
+                gridPane.add(labelId, 0, 1);
+                gridPane.add(labelOpis, 1, 1);
+            }
+            @Override
+            protected void updateItem(BookKeepingPatternsFX importModelFX, boolean b) {
+                super.updateItem(importModelFX, b);
+
+                if (!b && importModelFX != null) {
+                    labelId.setText(importModelFX.getId() + ".");
+                    labelOpis.setText(importModelFX.getPatternName());
+                    setGraphic(gridPane);
+                } else {
+                    setGraphic(null);
+                }
+            }
+        });
+        comboBox.valueProperty().addListener((ObservableValue observable, Object oldValue, Object newValue) -> {
+            if (newValue != null) {
+                try {
+                    payListPatternFX.setBookKeepingPatternType(((BookKeepingPatternsFX) newValue).getId());
+                    payListPatternFX.setBookKeepingPatterntTypeName(((BookKeepingPatternsFX) newValue).getPatternName());
+
+                    importDAO.updatePayListPattern(payListPatternFX);
+                } catch (SQLException e) {
+                    DialogUtils.errorDialog(e.getMessage());
+                }
+            }
+        });
+        BookKeepingPatterns bookKeepingPatterns1 = null;
+        try {
+            bookKeepingPatterns1 = importDAO.getBookKeepingPatternsById(payListPatternFX.getBookKeepingPatternType());
+            if (bookKeepingPatterns1 == null) {
+            } else {
+                BookKeepingPatternsFX bookKeepingPatternsFX = new BookKeepingPatternsFX();
+                bookKeepingPatternsFX.setId(bookKeepingPatterns1.getId());
+                bookKeepingPatternsFX.setPatternTypeName(bookKeepingPatterns1.getPatternTypeName());
+                bookKeepingPatternsFX.setPatternName(bookKeepingPatterns1.getPatterName());
+                bookKeepingPatternsFX.setPatternComment(bookKeepingPatterns1.getPatternComment());
+                bookKeepingPatternsFX.setPatternType(bookKeepingPatterns1.getPatternType());
+
+                comboBox.getSelectionModel().select(bookKeepingPatternsFX);
+            }
+        } catch (SQLException e) {
+            DialogUtils.errorDialog(e.getMessage());
+        }
+    }
+
     public void loadData() {
         try {
             ImportModelFX selectedImportModelFX = (ImportModelFX) importComboBox.getSelectionModel().getSelectedItem();
@@ -110,25 +185,31 @@ public class ListPatternWindowController {
     private void loadDataToTable(Integer importId) {
         updatePayMentPatternObservableList(importId);
         listTable.setItems(payListPatternFXES);
+        listTableImportId.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, Integer>("importId"));
+        listTableListId.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, Integer>("idList"));
+        listTableListName.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, String>("numberList"));
+        listTableDescriptionList.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, String>("descriptionList"));
+        listTableListDateColumn.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, String>("dateList"));
+        listTableCodeList.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, String>("departmentCode"));
+        listTableAgree.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, String>("agreeList"));
+        listTableComboBox.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, ComboBox>("bookKeepingPatternsComboBox"));
+        listTableBookButton.setCellValueFactory(new PropertyValueFactory<PayListPatternFX, Button>("bookButton"));
 
 
+        listTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
 
-/*
-        sendEmailTable.setItems(sendMailFXObservableList);
-        sendEmailTableIdColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Integer>("importId"));
-        sendEmailTableIdListColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Integer>("listId"));
-        sendEmailTableNameListColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, String>("listName"));
-        sendEmailTableCodeColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Integer>("code"));
-        sendEmailTableNameColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, String>("name"));
-        sendEmailTablePathColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, String>("pathFile"));
-        sendEmailTableGenerateColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Button>("generateButton"));
-        sendEmailTableViewColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Button>("viewButton"));
-        sendEmailTableEmailColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Button>("emailButton"));
-        sendEmailTableDeleteColumn.setCellValueFactory(new PropertyValueFactory<SendMailFX, Button>("deleteButton"));
+        for (PayListPatternFX item : payListPatternFXES) {
+            Button button = item.getBookButton();
+            button.setText("Księguj");
 
-        sendEmailTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
-        addListenerToButtons(importId);*/
+            button.setOnAction(e -> {
+                System.out.println(item.getBookKeepingPatterntTypeName());
+            });
+            initializeComboBox(item);
+        }
+
     }
+
 
     private void updatePayMentPatternObservableList(Integer importId) {
         List<PaylistPattern> paylistPatterns = null;

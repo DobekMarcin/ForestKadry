@@ -2,8 +2,9 @@ package md.enovaImport.modelsFX;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.SingleSelectionModel;
 
-public class BookKeepingPatternsFX {
+public class BookKeepingPatternsFX  {
 
     private SimpleIntegerProperty id = new SimpleIntegerProperty();
     private SimpleStringProperty patternName = new SimpleStringProperty();
@@ -13,13 +14,8 @@ public class BookKeepingPatternsFX {
 
     @Override
     public String toString() {
-        return "BookKeepingPatternsFX{" +
-                "id=" + id +
-                ", patternName=" + patternName +
-                ", patternType=" + patternType +
-                ", patternTypeName=" + patternTypeName +
-                ", patternComment=" + patternComment +
-                '}';
+        return  id.get() +
+                "." + patternName.get();
     }
 
     public BookKeepingPatternsFX(SimpleIntegerProperty id, SimpleStringProperty patternName, SimpleIntegerProperty patternType, SimpleStringProperty patternTypeName, SimpleStringProperty patternComment) {
