@@ -173,6 +173,7 @@ public class ListPatternWindowController {
             if (selectedImportModelFX != null) {
                 Integer importId = selectedImportModelFX.getId();
                 importDAO.generateBookKeepingPatternList(importId);
+                importDAO.updateImportListBookKeppingStatus(importId);
                 loadDataToTable(importId);
             } else {
                 DialogUtils.errorDialog("Wybierz pozycję importu!");

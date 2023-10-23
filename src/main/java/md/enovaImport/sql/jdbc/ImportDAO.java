@@ -46,6 +46,28 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public Boolean checkBookKeppingGenerate(Integer idImport) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Boolean check = false;
+        statement = connection.prepareStatement("Select ks from import_list where id=?");
+        statement.setInt(1,idImport);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getBoolean("ks");
+        connection.close();
+        return  check;
+    }
+
+    public void updateImportListBookKeppingStatus(Integer importId) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Update import_list set ks=? where id=?");
+        statement.setBoolean(1, true);
+        statement.setInt(2, importId);
+        statement.executeUpdate();
+        connection.close();
+    }
 
     public BookKeepingPatterns getBookKeepingPatternsById(Integer id) throws SQLException {
         BookKeepingPatterns bookKeepingPatterns=null;
@@ -562,13 +584,14 @@ public class ImportDAO {
         List<ImportModel> importModelList = new ArrayList<>();
         Connection connection = getConnectcion();
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("Select id,opis,data_importu,email from import_list");
+        ResultSet rs = statement.executeQuery("Select id,opis,data_importu,email,ks from import_list");
         while (rs.next()) {
             ImportModel importModel = new ImportModel();
             importModel.setId(rs.getInt("id"));
             importModel.setOpis(rs.getString("opis"));
             importModel.setDataImportu(rs.getDate("data_importu"));
             importModel.setEmail(rs.getBoolean("email"));
+            importModel.setBookKeeping(rs.getBoolean("ks"));
             importModelList.add(importModel);
         }
         connection.close();
@@ -701,6 +724,23 @@ public class ImportDAO {
         connection.close();
     }
 
+    public void deleteBookKeepingListPattern() throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from lista_plac_wzorce");
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public void deleteBookKeepingPattern() throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from wzorce_ksiegowania");
+        statement.executeUpdate();
+        connection.close();
+    }
+
+
     public void deleteListaPlac() throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
@@ -761,10 +801,11 @@ public class ImportDAO {
     public void addNewImport(ImportModel importModel, Integer importId) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("INSERT INTO import.import_list(id,opis,data_importu,email)VALUES ((Select coalesce(max(a.id+1),1) from import.import_list a),?,?,?);");
+        statement = connection.prepareStatement("INSERT INTO import.import_list(id,opis,data_importu,email,ks)VALUES ((Select coalesce(max(a.id+1),1) from import.import_list a),?,?,?,?);");
         statement.setString(1, importModel.getOpis());
         statement.setDate(2, new Date(importModel.getDataImportu().getTime()));
         statement.setBoolean(3,false);
+        statement.setBoolean(4,false);
         statement.executeUpdate();
         connection.close();
     }

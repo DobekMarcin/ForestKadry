@@ -246,6 +246,8 @@ public class MainWindowController {
             importDAO.deleteElementWyplatySlownik();
             importDAO.deletePersonSlownik();
             importDAO.deleteSendMail();
+            importDAO.deleteBookKeepingListPattern();
+            importDAO.deleteBookKeepingPattern();
 
             importDAO.addNewElementDictionary(new Element("Podatek zaliczka US"));
             importDAO.addNewElementDictionary(new Element("Emerytalna pracownik"));

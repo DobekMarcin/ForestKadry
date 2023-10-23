@@ -11,6 +11,8 @@ public class ImportModelFX {
     private SimpleStringProperty  data = new SimpleStringProperty();
     private SimpleBooleanProperty email = new SimpleBooleanProperty();
 
+    private SimpleBooleanProperty bookKeeping = new SimpleBooleanProperty();
+
     public ImportModelFX() {
     }
 
@@ -66,5 +68,17 @@ public class ImportModelFX {
 
     public void setEmail(boolean email) {
         this.email.set(email);
+    }
+
+    public boolean isBookKeeping() {
+        return bookKeeping.get();
+    }
+
+    public SimpleBooleanProperty bookKeepingProperty() {
+        return bookKeeping;
+    }
+
+    public void setBookKeeping(boolean bookKeeping) {
+        this.bookKeeping.set(bookKeeping);
     }
 }

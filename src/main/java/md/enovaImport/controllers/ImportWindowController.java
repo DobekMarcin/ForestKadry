@@ -29,6 +29,7 @@ public class ImportWindowController {
     private static final String NEW_IMPORT = "/FXML/NewImportWindow.fxml";
     private static final String LIST_WINDOW = "/FXML/ListWindow.fxml";
     private final ObservableList<ImportModelFX> importModelFX = FXCollections.observableArrayList();
+
     ImportDAO importDAO = new ImportDAO();
     @FXML
     private BorderPane borderPane;
@@ -40,6 +41,8 @@ public class ImportWindowController {
     private TableColumn importTableDateColumn;
     @FXML
     private TableColumn importTableEmailColumn;
+    @FXML
+    private TableColumn importTableBKColumn;
     @FXML
     private TableView importTable;
     private File file;
@@ -58,6 +61,7 @@ public class ImportWindowController {
                 modelFX.setOpis(element.getOpis());
                 modelFX.setData(element.getDataImportu().toString());
                 modelFX.setEmail(element.getEmail());
+                modelFX.setBookKeeping(element.getBookKeeping());
                 importModelFX.add(modelFX);
             });
 
@@ -68,8 +72,10 @@ public class ImportWindowController {
         importTableIdColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX, String>("id"));
         importTableDescriptionColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX, String>("opis"));
         importTableDateColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX, String>("data"));
-       importTableEmailColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX,Boolean>("email"));
-       importTableEmailColumn.setCellFactory(CheckBoxTableCell.forTableColumn(importTableEmailColumn));
+        importTableEmailColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX,Boolean>("email"));
+        importTableEmailColumn.setCellFactory(CheckBoxTableCell.forTableColumn(importTableEmailColumn));
+        importTableBKColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX,Boolean>("bookKeeping"));
+        importTableBKColumn.setCellFactory(CheckBoxTableCell.forTableColumn(importTableBKColumn));
         importTable.setItems(importModelFX);
 
         importTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
@@ -96,9 +102,10 @@ public class ImportWindowController {
     public void deleteImport() {
         try {
             ImportModelFX importModelFX1 = (ImportModelFX) importTable.getSelectionModel().getSelectedItem();
-            Boolean status=importDAO.checkEmailGenerate(importModelFX1.getId());
-            if (status){
-                DialogUtils.informationDialog("Wygenerowano listę do wysyłki email! Nie można skasować!");
+            Boolean statusEmail=importDAO.checkEmailGenerate(importModelFX1.getId());
+            Boolean statusBK=importDAO.checkBookKeppingGenerate(importModelFX1.getId());
+            if (statusEmail || statusBK){
+                DialogUtils.informationDialog("Nie można skasować!");
             }else{
             if (importModelFX1 != null) {
                 Integer result = DialogUtils.deleteImport();

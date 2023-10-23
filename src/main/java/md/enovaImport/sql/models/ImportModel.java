@@ -8,6 +8,7 @@ public class ImportModel {
     private String opis;
     private Date dataImportu;
     private Boolean email;
+    private Boolean bookKeeping;
 
     public ImportModel() {
     }
@@ -36,14 +37,12 @@ public class ImportModel {
         this.dataImportu = dataImportu;
     }
 
-    @Override
-    public String toString() {
-        return "ImportModel{" +
-                "id=" + id +
-                ", opis='" + opis + '\'' +
-                ", dataImportu=" + dataImportu +
-                ", email=" + email +
-                '}';
+    public Boolean getBookKeeping() {
+        return bookKeeping;
+    }
+
+    public void setBookKeeping(Boolean bookKeeping) {
+        this.bookKeeping = bookKeeping;
     }
 
     public Boolean getEmail() {
@@ -52,5 +51,16 @@ public class ImportModel {
 
     public void setEmail(Boolean email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "ImportModel{" +
+                "id=" + id +
+                ", opis='" + opis + '\'' +
+                ", dataImportu=" + dataImportu +
+                ", email=" + email +
+                ", bookKeeping=" + bookKeeping +
+                '}';
     }
 }

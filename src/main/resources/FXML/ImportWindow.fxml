@@ -16,6 +16,7 @@
           <TableColumn fx:id="importTableDescriptionColumn" prefWidth="500.0" text="%importTable.description" />
             <TableColumn fx:id="importTableDateColumn" prefWidth="60.0" text="%importTable.Data" />
             <TableColumn fx:id="importTableEmailColumn" prefWidth="75.0" text="%email.email" />
+            <TableColumn fx:id="importTableBKColumn" prefWidth="75.0" text="%import.bookKeeping" />
         </columns>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
