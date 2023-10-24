@@ -68,4 +68,17 @@ public class BookKeepingPatternsPosition {
     public void setAccountDisributor(String accountDisributor) {
         this.accountDisributor = accountDisributor;
     }
+
+    @Override
+    public String toString() {
+        return "BookKeepingPatternsPosition{" +
+                "patternId=" + patternId +
+                ", positionId=" + positionId +
+                ", name='" + name + '\'' +
+                ", accountBlame='" + accountBlame + '\'' +
+                ", accountHas='" + accountHas + '\'' +
+                ", distributor=" + distributor +
+                ", accountDisributor='" + accountDisributor + '\'' +
+                '}';
+    }
 }

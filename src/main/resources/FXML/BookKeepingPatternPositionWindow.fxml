@@ -9,15 +9,18 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.BookKeepingPatternPositionWindowController">
    <center>
-      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="patternPositionTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="60.0" text="%bookKeeping.pattern.table.lp" />
-          <TableColumn prefWidth="250.0" text="%bookKeeping.pattern.table.name" />
-            <TableColumn prefWidth="140.0" text="%bookKeeping.pattern.table.account1" />
-            <TableColumn prefWidth="140.0" text="%bookKeeping.pattern.table.account2" />
-            <TableColumn prefWidth="75.0" text="%bookKeeping.pattern.table.Distributor" />
-            <TableColumn prefWidth="135.0" text="%bookKeeping.pattern.table.account.Distributor" />
+          <TableColumn fx:id="lpTableColumn" prefWidth="60.0" text="%bookKeeping.pattern.table.lp" />
+          <TableColumn fx:id="nameTableColumn" prefWidth="250.0" text="%bookKeeping.pattern.table.name" />
+            <TableColumn fx:id="accountBlameTableColumn" prefWidth="140.0" text="%bookKeeping.pattern.table.account1" />
+            <TableColumn fx:id="accountHasTableColumn" prefWidth="140.0" text="%bookKeeping.pattern.table.account2" />
+            <TableColumn fx:id="distributorTableColumn" prefWidth="75.0" text="%bookKeeping.pattern.table.Distributor" />
+            <TableColumn fx:id="distributorAccountTableColumn" prefWidth="135.0" text="%bookKeeping.pattern.table.account.Distributor" />
         </columns>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
       </TableView>
    </center>
    <bottom>

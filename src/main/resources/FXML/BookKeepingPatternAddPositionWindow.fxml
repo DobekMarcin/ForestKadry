@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.BookKeepingPatternAddPositionWindowController" />
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="253.0" prefWidth="433.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="md.enovaImport.controllers.BookKeepingPatternAddPositionWindowController">
+   <children>
+      <Label layoutX="17.0" layoutY="14.0" text="%bookKeeping.pattern.table.lp" />
+      <Label layoutX="17.0" layoutY="46.0" text="%bookKeeping.pattern.table.name" />
+      <Label layoutX="17.0" layoutY="79.0" text="%bookKeeping.pattern.table.account1" />
+      <Label layoutX="17.0" layoutY="112.0" text="%bookKeeping.pattern.table.account2" />
+      <Label layoutX="17.0" layoutY="147.0" text="%bookKeeping.pattern.table.Distributor" />
+      <Label layoutX="17.0" layoutY="179.0" text="%bookKeeping.pattern.table.account.Distributor" />
+      <TextField fx:id="lpTextField" layoutX="134.0" layoutY="10.0" prefHeight="25.0" prefWidth="60.0" />
+      <TextField fx:id="nameTextField" layoutX="134.0" layoutY="42.0" prefHeight="25.0" prefWidth="279.0" />
+      <TextField fx:id="blaneTextField" layoutX="134.0" layoutY="75.0" prefHeight="25.0" prefWidth="279.0" />
+      <TextField fx:id="hasTextField" layoutX="134.0" layoutY="108.0" prefHeight="25.0" prefWidth="279.0" />
+      <TextField fx:id="distibutorAccountTextField" layoutX="134.0" layoutY="175.0" prefHeight="25.0" prefWidth="279.0" />
+      <CheckBox fx:id="distributorCheckField" layoutX="134.0" layoutY="147.0" mnemonicParsing="false" />
+      <Button layoutX="191.0" layoutY="214.0" mnemonicParsing="false" onAction="#addPositionButton" text="%bookKeeping.pattern.add" />
+   </children>
+</Pane>

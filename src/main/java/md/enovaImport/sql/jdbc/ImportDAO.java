@@ -46,6 +46,57 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public List<BookKeepingPatternsPosition> getBookKeepingPatternsPositionsById(Integer id) throws SQLException {
+        List<BookKeepingPatternsPosition> bookKeepingPatternsPositionsList= new ArrayList<>();
+        Connection connection = getConnectcion();
+        PreparedStatement statement;
+        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
+        statement.setInt(1,id);
+        ResultSet rs=statement.executeQuery();
+        while(rs.next()){
+            BookKeepingPatternsPosition bookKeepingPatternsPosition = new BookKeepingPatternsPosition();
+            bookKeepingPatternsPosition.setPatternId(rs.getInt("id_wzorca"));
+            bookKeepingPatternsPosition.setPositionId(rs.getInt("pozycja"));
+            bookKeepingPatternsPosition.setAccountDisributor(rs.getString("rozdzielnik_konto"));
+            bookKeepingPatternsPosition.setDistributor(rs.getBoolean("rozdzielnik"));
+            bookKeepingPatternsPosition.setAccountHas(rs.getString("konto_ma"));
+            bookKeepingPatternsPosition.setAccountBlame(rs.getString("konto_wn"));
+            bookKeepingPatternsPosition.setName(rs.getString("nazwa"));
+            bookKeepingPatternsPositionsList.add(bookKeepingPatternsPosition);
+        }
+        connection.close();
+        return bookKeepingPatternsPositionsList;
+    }
+
+    public Integer checkBookKeppingPositionId(Integer patternId,Integer positionId) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Integer check = 0;
+        statement = connection.prepareStatement("Select count(*) as ilosc from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? and pozycja=?");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionId);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getInt("ilosc");
+        connection.close();
+        return  check;
+    }
+
+    public void addBookKeepingPatternPosition(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Insert into wzorce_ksiegowania_pozycje_slownik (id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto) values (?,?,?,?,?,?,?)");
+        statement.setInt(1, bookKeepingPatternsPosition.getPatternId());
+        statement.setInt(2, bookKeepingPatternsPosition.getPositionId());
+        statement.setString(3,bookKeepingPatternsPosition.getName());
+        statement.setString(4,bookKeepingPatternsPosition.getAccountBlame());
+        statement.setString(5,bookKeepingPatternsPosition.getAccountHas());
+        statement.setBoolean(6,bookKeepingPatternsPosition.getDistributor());
+        statement.setString(7,bookKeepingPatternsPosition.getAccountDisributor());
+        statement.executeUpdate();
+        connection.close();
+    }
+
     public Boolean checkBookKeppingGenerate(Integer idImport) throws SQLException {
         PreparedStatement statement=null;
         Connection connection = getConnectcion();

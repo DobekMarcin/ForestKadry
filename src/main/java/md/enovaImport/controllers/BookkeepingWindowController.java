@@ -72,31 +72,31 @@ public class BookkeepingWindowController {
 
             booKeepingTable.setPlaceholder(new Label(FXMLUtils.getBundle("empty.table")));
 
-            bookKeepingPatternsFXES.forEach(e->{
-                e.getBookKeepingPositionButton().setText("Pozycje");
-                e.getBookKeepingPositionButton().setOnAction(handler->{
+            bookKeepingPatternsFXES.forEach(element->{
+                element.getBookKeepingPositionButton().setText("Pozycje");
+                element.getBookKeepingPositionButton().setOnAction(handler->{
 
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(BOOKKEEPING_PATTERN_POSITION));
                     fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
                     try {
                         Parent parent = fxmlLoader.load();
                         BookKeepingPatternPositionWindowController bookKeepingPatternPositionWindowController = fxmlLoader.getController();
-
-
                         Scene scene = new Scene(parent);
                         Stage stage = new Stage();
                         stage.setTitle("Pozycje wzorca");
                         stage.setResizable(false);
                         stage.initModality(Modality.APPLICATION_MODAL);
                         stage.setScene(scene);
+                        bookKeepingPatternPositionWindowController.setBookKeepingPatternsFX(element);
                         bookKeepingPatternPositionWindowController.setStage(stage);
-                        bookKeepingPatternPositionWindowController.setBookKeepingPatternsFX(e);
+                        bookKeepingPatternPositionWindowController.initialize();
+
                           stage.showAndWait();
                       //  bookKeepingPatternsFXES.clear();
                       //  initialize();
 
                     } catch (IOException exception) {
-                        throw new RuntimeException(exception);
+                         throw new RuntimeException(exception);
                     }
                 });
 
