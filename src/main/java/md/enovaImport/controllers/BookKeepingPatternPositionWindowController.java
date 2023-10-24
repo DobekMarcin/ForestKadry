@@ -18,6 +18,7 @@ import md.enovaImport.modelsFX.BookKeepingPatternsPositionFX;
 import md.enovaImport.modelsFX.ImportModelFX;
 import md.enovaImport.sql.jdbc.ImportDAO;
 import md.enovaImport.sql.models.BookKeepingPatternsPosition;
+import md.enovaImport.utils.DialogUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -123,4 +124,17 @@ public class BookKeepingPatternPositionWindowController {
     }
 
 
+    public void deletePositionButton() {
+        BookKeepingPatternsPositionFX bookKeepingPatternsPositionFX= (BookKeepingPatternsPositionFX) patternPositionTable.getSelectionModel().getSelectedItem();
+        if(bookKeepingPatternsPositionFX==null){
+            DialogUtils.errorDialog("Zaznacz rekord!");
+        }else{
+        try {
+            importDAO.deleteBookKeepingPatternPositionById(bookKeepingPatternsPositionFX.getPatternId(),bookKeepingPatternsPositionFX.getPositionId());
+            bookKeepingPatternsPositionsFX.clear();
+            initialize();
+        } catch (SQLException e) {
+            DialogUtils.errorDialog("Problem z połączeniem z bazą danych!");
+        }}
+    }
 }

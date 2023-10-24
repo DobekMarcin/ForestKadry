@@ -46,6 +46,16 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public void deleteBookKeepingPatternPositionById(Integer patternId,Integer positionId) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? and pozycja=?");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionId);
+        statement.executeUpdate();
+        connection.close();
+    }
+
     public List<BookKeepingPatternsPosition> getBookKeepingPatternsPositionsById(Integer id) throws SQLException {
         List<BookKeepingPatternsPosition> bookKeepingPatternsPositionsList= new ArrayList<>();
         Connection connection = getConnectcion();
