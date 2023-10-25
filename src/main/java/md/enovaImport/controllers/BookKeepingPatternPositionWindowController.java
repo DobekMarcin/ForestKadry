@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -18,6 +19,7 @@ import md.enovaImport.modelsFX.BookKeepingPatternsPositionFX;
 import md.enovaImport.modelsFX.ImportModelFX;
 import md.enovaImport.sql.jdbc.ImportDAO;
 import md.enovaImport.sql.models.BookKeepingPatternsPosition;
+import md.enovaImport.sql.models.Parts;
 import md.enovaImport.utils.DialogUtils;
 
 import java.io.IOException;
@@ -28,6 +30,8 @@ import java.util.ResourceBundle;
 public class BookKeepingPatternPositionWindowController {
 
     private final ObservableList<BookKeepingPatternsPositionFX> bookKeepingPatternsPositionsFX = FXCollections.observableArrayList();
+    @FXML
+    private TableColumn partsTableColumn;
     @FXML
     private TableView patternPositionTable;
     @FXML
@@ -44,6 +48,7 @@ public class BookKeepingPatternPositionWindowController {
     private TableColumn distributorAccountTableColumn;
     private List<BookKeepingPatternsPosition> bookKeepingPatternsPositionList;
     private static final String BOOKKEEPING_PATTERN_ADD_POSITION = "/FXML/BookKeepingPatternAddPositionWindow.fxml";
+    private static final String BOOKKEEPING_PARTS="/FXML/BookKeepingPartsWindow.fxml";
     private Stage stage;
     private BookKeepingPatternsFX bookKeepingPatternsFX;
 
@@ -64,6 +69,10 @@ public class BookKeepingPatternPositionWindowController {
                 bookKeepingPatternsPosition.setAccountHas(e.getAccountHas());
                 bookKeepingPatternsPosition.setAccountBlame(e.getAccountBlame());
                 bookKeepingPatternsPosition.setAccountDistributor(e.getAccountDisributor());
+
+                bookKeepingPatternsPosition.getPartsButton().setText("Składniki");
+                bookKeepingPatternsPosition.getPartsButton().setOnAction(f->addActionToPartsButton(e));
+
                 bookKeepingPatternsPositionsFX.add(bookKeepingPatternsPosition);
             });
 
@@ -75,12 +84,39 @@ public class BookKeepingPatternPositionWindowController {
 
             distributorTableColumn.setCellValueFactory(new PropertyValueFactory<ImportModelFX,Boolean>("distributor"));
             distributorTableColumn.setCellFactory(CheckBoxTableCell.forTableColumn(distributorTableColumn));
+            partsTableColumn.setCellValueFactory(new PropertyValueFactory<BookKeepingPatternsPositionFX, Button>("partsButton"));
 
             patternPositionTable.setItems(bookKeepingPatternsPositionsFX);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addActionToPartsButton(BookKeepingPatternsPosition e){
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(BOOKKEEPING_PARTS));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+
+        try {
+            Parent parent = fxmlLoader.load();
+            BookKeepingPartsWindowController bookKeepingPartsWindowController = fxmlLoader.getController();
+            bookKeepingPartsWindowController.setPatternId(bookKeepingPatternsFX.getId());
+            bookKeepingPartsWindowController.setPositionId(e.getPositionId());
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Wybierz składnik");
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            bookKeepingPartsWindowController.initialize();
+            stage.showAndWait();
+            bookKeepingPatternsPositionsFX.clear();
+            initialize();
+        } catch (IOException f) {
+
+            DialogUtils.errorDialog("Błąd aplikacji!");
+        }
+
     }
 
     public void addPositionButton() {
@@ -103,7 +139,7 @@ public class BookKeepingPatternPositionWindowController {
             bookKeepingPatternsPositionsFX.clear();
             initialize();
         } catch (IOException exception) {
-            throw new RuntimeException(exception);
+            DialogUtils.errorDialog("Błąd aplikacji!");
         }
     }
 
@@ -130,10 +166,15 @@ public class BookKeepingPatternPositionWindowController {
             DialogUtils.errorDialog("Zaznacz rekord!");
         }else{
         try {
-            importDAO.deleteBookKeepingPatternPositionById(bookKeepingPatternsPositionFX.getPatternId(),bookKeepingPatternsPositionFX.getPositionId());
-            bookKeepingPatternsPositionsFX.clear();
-            initialize();
-        } catch (SQLException e) {
+            List<Parts> partsList=importDAO.getPartsById(bookKeepingPatternsPositionFX.getPatternId(),bookKeepingPatternsPositionFX.getPositionId());
+            if(partsList.size()>0){
+                DialogUtils.informationDialog("Usuń składniki wzorca!");
+            }else {
+                importDAO.deleteBookKeepingPatternPositionById(bookKeepingPatternsPositionFX.getPatternId(), bookKeepingPatternsPositionFX.getPositionId());
+                bookKeepingPatternsPositionsFX.clear();
+                initialize();
+            }
+            } catch (SQLException e) {
             DialogUtils.errorDialog("Problem z połączeniem z bazą danych!");
         }}
     }

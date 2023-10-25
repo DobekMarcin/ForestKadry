@@ -1,5 +1,7 @@
 package md.enovaImport.sql.models;
 
+import javafx.scene.control.Button;
+
 public class BookKeepingPatternsPosition {
 
     private Integer patternId;
@@ -9,6 +11,8 @@ public class BookKeepingPatternsPosition {
     private String accountHas;
     private Boolean distributor;
     private String accountDisributor;
+
+
 
     public BookKeepingPatternsPosition() {
     }

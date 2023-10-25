@@ -1,5 +1,7 @@
 package md.enovaImport.sql.jdbc;
 
+import md.enovaImport.modelsFX.ElementSlownikFX;
+import md.enovaImport.modelsFX.PartsFX;
 import md.enovaImport.modelsFX.PayListPatternFX;
 import md.enovaImport.modelsFX.SendMailFX;
 import md.enovaImport.sql.models.*;
@@ -44,6 +46,103 @@ public class ImportDAO {
 
     private Connection getConnectcion() throws SQLException {
         return DriverManager.getConnection(url, username, password);
+    }
+
+    public Integer checkListPatternById(Integer patternId) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Integer check = 0;
+        statement = connection.prepareStatement("Select count(*) as ilosc from lista_plac_wzorce where id_wzorca=?;");
+        statement.setInt(1,patternId);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getInt("ilosc");
+        connection.close();
+        return  check;
+    }
+
+    public void updatesPartsById(PartsFX partsFX,Integer patternId, Integer positionId) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("UPDATE skladniki set symbol=(select znak from (Select case when symbol='+' then '-' else '+' end as znak from skladniki where id_wzorca=? and pozycja=? and lp=?) X) where id_wzorca=? and pozycja=? and lp=?");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionId);
+        statement.setInt(3,partsFX.getId());
+        statement.setInt(4,patternId);
+        statement.setInt(5,positionId);
+        statement.setInt(6,partsFX.getId());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public void deletePartsById(PartsFX partsFX,Integer patternId, Integer positionId) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from skladniki where id_wzorca=? and pozycja=? and lp=?");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionId);
+        statement.setInt(3,partsFX.getId());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public List<ElementSlownik> getDictionaryElementListOnlyNoParts(Integer patternId,Integer positionId) throws SQLException {
+        List<ElementSlownik> elementSlownikList = new ArrayList<>();
+        Connection connection = getConnectcion();
+        PreparedStatement statement;
+        statement=connection.prepareStatement("Select A.id,A.nazwa,A.alias,A.czy_drukowac,A.kolejnosc from elementy_slownik A where A.id not in (Select B.id_elementu from skladniki B where B.id_wzorca=? and pozycja=?)");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionId);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()){
+            ElementSlownik elementSlownik = new ElementSlownik();
+            elementSlownik.setId(rs.getInt("id"));
+            elementSlownik.setNazwa(rs.getString("nazwa"));
+            elementSlownik.setAlias(rs.getString("alias"));
+            elementSlownik.setCzyDrukowac(rs.getBoolean("czy_drukowac"));
+            elementSlownik.setKolejnosc(rs.getInt("kolejnosc"));
+
+            elementSlownikList.add(elementSlownik);
+        }
+        connection.close();
+        return  elementSlownikList;
+    }
+
+    public List<Parts> getPartsById(Integer patternId,Integer positionid) throws SQLException {
+        List<Parts> parts= new ArrayList<>();
+        Connection connection = getConnectcion();
+        PreparedStatement statement;
+        statement= connection.prepareStatement("SELECT A.id_wzorca,A.pozycja,A.lp,A.id_elementu,B.nazwa,A.symbol  FROM import.skladniki A left join elementy_slownik B on B.id=A.id_elementu  where A.id_wzorca=? and A.pozycja=? order by lp;");
+        statement.setInt(1,patternId);
+        statement.setInt(2,positionid);
+        ResultSet rs=statement.executeQuery();
+        while(rs.next()){
+
+            Parts parts1 = new Parts();
+            parts1.setPatternId(rs.getInt("id_wzorca"));
+            parts1.setPositionId(rs.getInt("pozycja"));
+            parts1.setId(rs.getInt("lp"));
+            parts1.setPartsId(rs.getInt("id_elementu"));
+            parts1.setPartsName(rs.getString("nazwa"));
+            parts1.setSymbol(rs.getString("symbol"));
+            parts.add(parts1);
+        }
+        connection.close();
+        return parts;
+    }
+
+    public void addBookKeepingPart(Integer patternId, Integer position, ElementSlownikFX elementSlownikFX) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Insert into skladniki (id_wzorca,pozycja,lp,id_elementu,symbol) values (?,?,(Select idek from (Select coalesce(max(A.lp)+1,1) as idek from skladniki A where A.id_wzorca=? and A.pozycja=?) x ),?,?)");
+        statement.setInt(1, patternId);
+        statement.setInt(2, position);
+        statement.setInt(3,patternId);
+        statement.setInt(4,position);
+        statement.setInt(5,elementSlownikFX.getId());
+        statement.setString(6,"+");
+        statement.executeUpdate();
+        connection.close();
     }
 
     public void deleteBookKeepingPatternPositionById(Integer patternId,Integer positionId) throws SQLException {

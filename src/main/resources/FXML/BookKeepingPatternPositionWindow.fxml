@@ -12,11 +12,12 @@
       <TableView fx:id="patternPositionTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="lpTableColumn" prefWidth="60.0" text="%bookKeeping.pattern.table.lp" />
-          <TableColumn fx:id="nameTableColumn" prefWidth="250.0" text="%bookKeeping.pattern.table.name" />
-            <TableColumn fx:id="accountBlameTableColumn" prefWidth="140.0" text="%bookKeeping.pattern.table.account1" />
-            <TableColumn fx:id="accountHasTableColumn" prefWidth="140.0" text="%bookKeeping.pattern.table.account2" />
+          <TableColumn fx:id="nameTableColumn" prefWidth="200.0" text="%bookKeeping.pattern.table.name" />
+            <TableColumn fx:id="accountBlameTableColumn" prefWidth="120.0" text="%bookKeeping.pattern.table.account1" />
+            <TableColumn fx:id="accountHasTableColumn" prefWidth="120.0" text="%bookKeeping.pattern.table.account2" />
             <TableColumn fx:id="distributorTableColumn" prefWidth="75.0" text="%bookKeeping.pattern.table.Distributor" />
             <TableColumn fx:id="distributorAccountTableColumn" prefWidth="135.0" text="%bookKeeping.pattern.table.account.Distributor" />
+            <TableColumn fx:id="partsTableColumn" prefWidth="75.0" text="%bookKeeping.pattern.parts" />
         </columns>
          <BorderPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -14,6 +14,15 @@ public class BookKeepingPatternsPositionFX {
     private final SimpleStringProperty accountHas = new SimpleStringProperty();
     private final SimpleBooleanProperty distributor = new SimpleBooleanProperty();
     private final SimpleStringProperty accountDistributor = new SimpleStringProperty();
+    private Button partsButton = new Button();
+
+    public Button getPartsButton() {
+        return partsButton;
+    }
+
+    public void setPartsButton(Button partsButton) {
+        this.partsButton = partsButton;
+    }
 
     public BookKeepingPatternsPositionFX() {
     }

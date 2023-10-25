@@ -17,6 +17,7 @@ import md.enovaImport.modelsFX.BookKeepingPatternsFX;
 import md.enovaImport.modelsFX.SimplePersonFX;
 import md.enovaImport.sql.jdbc.ImportDAO;
 import md.enovaImport.sql.models.BookKeepingPatterns;
+import md.enovaImport.sql.models.BookKeepingPatternsPosition;
 import md.enovaImport.sql.models.SimplePerson;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
@@ -149,12 +150,19 @@ public class BookkeepingWindowController {
             DialogUtils.errorDialog("Nie wybrano rekordu.");
         } else {
             try {
-                importDAO.deleteBookKeepingPatternById(bookKeepingPatterns1.getId());
+
+                List<BookKeepingPatternsPosition> bookKeepingPatternsPositionList = importDAO.getBookKeepingPatternsPositionsById(bookKeepingPatterns1.getId());
+                if(bookKeepingPatternsPositionList.size()>0 || importDAO.checkListPatternById(bookKeepingPatterns1.getId())>0){
+                    DialogUtils.informationDialog("Pozycja posiada przypisane wzorce lub przypisano pozycję do listy płac!");
+                }else {
+                    importDAO.deleteBookKeepingPatternById(bookKeepingPatterns1.getId());
+                    bookKeepingPatternsFXES.clear();
+                    initialize();
+                }
             } catch (SQLException e) {
                 DialogUtils.errorDialog("Problem z komunikacją z bazą danych!");
             }
-            bookKeepingPatternsFXES.clear();
-            initialize();
+
         }
     }
 }
