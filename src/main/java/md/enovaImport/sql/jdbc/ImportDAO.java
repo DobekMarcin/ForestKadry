@@ -48,6 +48,61 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public void addDepartment(Department department) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("INSERT INTO korg (id,kod,nazwa) VALUES (?,?,?);");
+        statement.setInt(1, department.getId());
+        statement.setString(2, department.getCode());
+        statement.setString(3,department.getName());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+
+    public void updatesDepartmentsById(Department department) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("UPDATE korg set kod=?,nazwa=? where id=?");
+        statement.setString(1,department.getCode());
+        statement.setString(2,department.getName());
+        statement.setInt(3,department.getId());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public Integer checkdepartmentById(Integer id) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Integer check = 0;
+        statement = connection.prepareStatement("Select count(*) as ilosc from korg where id=?;");
+        statement.setInt(1,id);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getInt("ilosc");
+        connection.close();
+        return  check;
+    }
+
+
+    public List<Department> getDepartment() throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        List<Department> departments = new ArrayList<>();
+        statement = connection.prepareStatement(" SELECT id,kod,nazwa FROM korg order by id");
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            Department department = new Department();
+            department.setId(rs.getInt("id"));
+            department.setCode(rs.getString("kod"));
+            department.setName(rs.getString("nazwa"));
+            departments.add(department);
+        }
+        connection.close();
+        return departments;
+    }
+
+
     public Integer checkListPatternById(Integer patternId) throws SQLException {
         PreparedStatement statement=null;
         Connection connection = getConnectcion();

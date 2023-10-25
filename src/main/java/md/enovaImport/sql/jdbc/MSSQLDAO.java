@@ -1,5 +1,6 @@
 package md.enovaImport.sql.jdbc;
 
+import md.enovaImport.sql.models.Department;
 import md.enovaImport.sql.models.Person;
 
 import java.sql.*;
@@ -74,6 +75,23 @@ public class MSSQLDAO {
         }
         connection.close();
         return personList;
+    }
+
+    public List<Department> getDepartment() throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        List<Department> departments = new ArrayList<>();
+        statement = connection.prepareStatement(" SELECT id,symbol,nazwa FROM eno_Forest.dbo.Wydzialy where symbol <>'' order by id");
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            Department department = new Department();
+            department.setId(rs.getInt("id"));
+            department.setCode(rs.getString("symbol"));
+            department.setName(rs.getString("nazwa"));
+            departments.add(department);
+        }
+        connection.close();
+        return departments;
     }
 
 

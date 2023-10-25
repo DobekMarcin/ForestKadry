@@ -33,6 +33,7 @@ public class MainWindowController {
     private static final String EMAIL_GENERATE_WINDOW="/FXML/SendEmailWindow.fxml";
     private static final String BOOKKEEPING_PATTERN_WINDOW="/FXML/BookkeepingWindow.fxml";
     private static final String BOOKKEEPING_LIST_PATTERN="/FXML/ListPatternWindow.fxml";
+    private static final String DEPARTMENTS ="/FXML/DepartmentWindow.fxml";
 
     @FXML
     private TextField statusTextField;
@@ -304,5 +305,19 @@ public class MainWindowController {
     }
 
 
+    public void departmentsButton( ) {
 
+        FXMLLoader fxmlLoader = new FXMLLoader(MainStage.class.getResource((DEPARTMENTS)));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+        try {
+            Pane bordPane = fxmlLoader.load();
+            DepartmentWindowController departmentWindowController = fxmlLoader.getController();
+         //   departmentWindowController.setMainWindowController(this);
+         //   listWindowController.setImportId(importDetailId);
+            departmentWindowController.initialize();
+            borderPane.setCenter(bordPane);
+        } catch (IOException e) {
+            DialogUtils.errorDialog("Nie można wyświelić danych!");
+        }
+    }
 }
