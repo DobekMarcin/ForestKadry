@@ -48,6 +48,49 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public List<DepartmentDistributorPosition> getDepartmentPosition(Integer departmentId) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        List<DepartmentDistributorPosition> departmentsPositions = new ArrayList<>();
+        statement = connection.prepareStatement(" SELECT korg_id,lp,konto FROM korg_konta where korg_id=? order by lp");
+        statement.setInt(1,departmentId);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            DepartmentDistributorPosition departmentDistributorPosition = new DepartmentDistributorPosition();
+            departmentDistributorPosition.setKorg_id(rs.getInt("korg_id"));
+            departmentDistributorPosition.setId(rs.getInt("lp"));
+            departmentDistributorPosition.setAccount(rs.getString("konto"));
+            departmentsPositions.add(departmentDistributorPosition);
+        }
+        connection.close();
+        return departmentsPositions;
+    }
+
+    public void addDepartmentDistributorPosition(DepartmentDistributorPosition departmentDistributorPosition) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("INSERT INTO korg_konta (korg_id,lp,konto) VALUES (?,?,?);");
+        statement.setInt(1, departmentDistributorPosition.getKorg_id());
+        statement.setInt(2, departmentDistributorPosition.getId());
+        statement.setString(3,departmentDistributorPosition.getAccount());
+        statement.executeUpdate();
+        connection.close();
+    }
+
+    public Integer checkDepartmentDistributorPositionById(DepartmentDistributorPosition departmentDistributorPosition) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Integer check = 0;
+        statement = connection.prepareStatement("Select count(*) as ilosc from korg_konta where korg_id=? and lp=?;");
+        statement.setInt(1,departmentDistributorPosition.getKorg_id());
+        statement.setInt(2,departmentDistributorPosition.getId());
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getInt("ilosc");
+        connection.close();
+        return  check;
+    }
+
     public void addDepartment(Department department) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
