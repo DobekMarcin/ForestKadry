@@ -3,9 +3,13 @@ package md.enovaImport.controllers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import md.enovaImport.modelsFX.DepartmentDistributorPositionFX;
@@ -24,18 +28,34 @@ public class DepartmentDistributorController {
 
     private final static String DEPARTMENT_DISTRIBUTOR_ADD_POSITION = "/FXML/DepartmentDistributorAddPosition.fxml";
 
+    @FXML
+    private TableView partsDictionaryPositionTable;
+    @FXML
+    private TableColumn idTableColumn;
+    @FXML
+    private TableColumn nameTableColumn;
+
     private Integer departmentId = 0;
 
     private List<DepartmentDistributorPosition> departmentDistributorPositionList = new ArrayList<>();
     private final ObservableList<DepartmentDistributorPositionFX> departmentDistributorPositionFXES = FXCollections.observableArrayList();
 private ImportDAO importDAO = new ImportDAO();
+
     public void initialize() {
 
         try {
             departmentDistributorPositionList =importDAO.getDepartmentPosition(departmentId);
             departmentDistributorPositionList.forEach(element->{
                 DepartmentDistributorPositionFX departmentDistributorPositionFX = new DepartmentDistributorPositionFX();
+                departmentDistributorPositionFX.setId(element.getId());
+                departmentDistributorPositionFX.setKorg_id(element.getKorg_id());
+                departmentDistributorPositionFX.setAccount(element.getAccount());
+
             });
+
+            idTableColumn.setCellValueFactory(new PropertyValueFactory<DepartmentDistributorPositionFX,Integer>("id"));
+            nameTableColumn.setCellValueFactory(new PropertyValueFactory<DepartmentDistributorPositionFX,String>("account"));
+            partsDictionaryPositionTable.setItems(departmentDistributorPositionFXES);
 
         } catch (SQLException e) {
             DialogUtils.errorDialog("Bład pobierania danych z bazy!");
@@ -76,4 +96,6 @@ private ImportDAO importDAO = new ImportDAO();
     public void setDepartmentId(Integer departmentId) {
         this.departmentId = departmentId;
     }
+
+
 }
