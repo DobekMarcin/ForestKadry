@@ -81,12 +81,12 @@ public class MSSQLDAO {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         List<Department> departments = new ArrayList<>();
-        statement = connection.prepareStatement(" SELECT id,symbol,nazwa FROM eno_Forest.dbo.Wydzialy where symbol <>'' order by id");
+        statement = connection.prepareStatement(" SELECT id,kod,nazwa FROM eno_Forest.dbo.Wydzialy order by id");
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             Department department = new Department();
             department.setId(rs.getInt("id"));
-            department.setCode(rs.getString("symbol"));
+            department.setCode(rs.getString("kod"));
             department.setName(rs.getString("nazwa"));
             departments.add(department);
         }

@@ -1,9 +1,6 @@
 package md.enovaImport.sql.jdbc;
 
-import md.enovaImport.modelsFX.ElementSlownikFX;
-import md.enovaImport.modelsFX.PartsFX;
-import md.enovaImport.modelsFX.PayListPatternFX;
-import md.enovaImport.modelsFX.SendMailFX;
+import md.enovaImport.modelsFX.*;
 import md.enovaImport.sql.models.*;
 import md.enovaImport.xml.models.*;
 
@@ -46,6 +43,31 @@ public class ImportDAO {
 
     private Connection getConnectcion() throws SQLException {
         return DriverManager.getConnection(url, username, password);
+    }
+
+    public Double getpartSum(Integer importId,Integer listId,String elementName) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Double check = 0d;
+        statement = connection.prepareStatement("SELECT sum(wartoscElementu) as suma FROM import.element_wyplaty where id_importu=? and id_listy=? and nazwaElementu=?;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        statement.setString(3,elementName);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getDouble("suma");
+        connection.close();
+        return  check;
+    }
+
+    public void deleteDepartmentPositionById(DepartmentDistributorPositionFX departmentDistributorPositionFX ) throws SQLException {
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("Delete from korg_konta where korg_id=? and lp=?");
+        statement.setInt(1,departmentDistributorPositionFX.getKorg_id());
+        statement.setInt(2,departmentDistributorPositionFX.getId());
+        statement.executeUpdate();
+        connection.close();
     }
 
     public List<DepartmentDistributorPosition> getDepartmentPosition(Integer departmentId) throws SQLException {

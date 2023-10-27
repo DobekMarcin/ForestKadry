@@ -64,14 +64,14 @@ public class DepartmentWindowController {
                     try {
                         Parent parent = fxmlLoader.load();
                         DepartmentDistributorController departmentDistributorController = fxmlLoader.getController();
-
+                        departmentDistributorController.setDepartmentId(element.getId());
                         Scene scene = new Scene(parent);
                         Stage stage = new Stage();
                         stage.setTitle("Rozdzielnik KORG");
                         stage.setResizable(false);
                         stage.initModality(Modality.APPLICATION_MODAL);
                         stage.setScene(scene);
-                        departmentDistributorController.setDepartmentId(element.getId());
+                        departmentDistributorController.initialize();
                         stage.showAndWait();
                         initialize();
                     } catch (IOException ee) {
@@ -89,13 +89,9 @@ public class DepartmentWindowController {
             distributorColumn.setCellValueFactory(new PropertyValueFactory<DepartmentFX, Button>("distributor"));
 
             departmentTable.setItems(departmentFXObservableList);
-
-
         } catch (SQLException e) {
             DialogUtils.errorDialog("Błąd pobierania danych z enova.");
         }
-
-
     }
     public void updateButton() {
 

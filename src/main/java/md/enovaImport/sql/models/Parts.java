@@ -59,4 +59,16 @@ public class Parts {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
+
+    @Override
+    public String toString() {
+        return "Parts{" +
+                "patternId=" + patternId +
+                ", positionId=" + positionId +
+                ", id=" + id +
+                ", partsId=" + partsId +
+                ", partsName='" + partsName + '\'' +
+                ", symbol='" + symbol + '\'' +
+                '}';
+    }
 }

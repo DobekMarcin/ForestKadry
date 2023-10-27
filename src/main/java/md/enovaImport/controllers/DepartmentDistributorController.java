@@ -42,15 +42,18 @@ public class DepartmentDistributorController {
 private ImportDAO importDAO = new ImportDAO();
 
     public void initialize() {
-
         try {
+            departmentDistributorPositionFXES.clear();
             departmentDistributorPositionList =importDAO.getDepartmentPosition(departmentId);
+
             departmentDistributorPositionList.forEach(element->{
                 DepartmentDistributorPositionFX departmentDistributorPositionFX = new DepartmentDistributorPositionFX();
                 departmentDistributorPositionFX.setId(element.getId());
                 departmentDistributorPositionFX.setKorg_id(element.getKorg_id());
                 departmentDistributorPositionFX.setAccount(element.getAccount());
 
+
+                departmentDistributorPositionFXES.add(departmentDistributorPositionFX);
             });
 
             idTableColumn.setCellValueFactory(new PropertyValueFactory<DepartmentDistributorPositionFX,Integer>("id"));
@@ -82,7 +85,7 @@ private ImportDAO importDAO = new ImportDAO();
             departmentDistributorAddPositionController.setStage(stage);
             departmentDistributorAddPositionController.setDepartmentId(departmentId);
             stage.showAndWait();
-            //      initialize();
+            initialize();
         } catch (IOException ee) {
             DialogUtils.errorDialog("Problem z komunikacją z bazą danych.");
             ee.printStackTrace();
@@ -98,4 +101,17 @@ private ImportDAO importDAO = new ImportDAO();
     }
 
 
+    public void deleteButton() {
+        try {
+            DepartmentDistributorPositionFX departmentDistributorPositionFX = (DepartmentDistributorPositionFX) partsDictionaryPositionTable.getSelectionModel().getSelectedItem();
+            if(departmentDistributorPositionFX==null){
+                DialogUtils.informationDialog("Znaznacz pozycję!");
+            }else {
+                importDAO.deleteDepartmentPositionById(departmentDistributorPositionFX);
+                initialize();
+            }
+        } catch (SQLException e) {
+            DialogUtils.errorDialog("Problem komunikacji z bazą danych!");
+        }
+    }
 }

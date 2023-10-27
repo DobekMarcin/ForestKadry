@@ -23,6 +23,7 @@
         <HBox spacing="20.0" BorderPane.alignment="CENTER">
             <children>
                 <Button mnemonicParsing="false" onAction="#addPositionButton" text="%department.distributor.add" />
+            <Button mnemonicParsing="false" onAction="#deleteButton" text="%department.distributor.new.delete" />
             </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

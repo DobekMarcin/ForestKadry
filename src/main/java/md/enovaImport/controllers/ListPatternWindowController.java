@@ -11,10 +11,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import md.enovaImport.modelsFX.*;
 import md.enovaImport.sql.jdbc.ImportDAO;
-import md.enovaImport.sql.models.BookKeepingPatterns;
-import md.enovaImport.sql.models.ImportModel;
-import md.enovaImport.sql.models.PaylistPattern;
-import md.enovaImport.sql.models.SendMail;
+import md.enovaImport.sql.models.*;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 
@@ -204,7 +201,41 @@ public class ListPatternWindowController {
             button.setText("Księguj");
 
             button.setOnAction(e -> {
-                System.out.println(item.getBookKeepingPatterntTypeName());
+
+                try {
+                    Integer bookPattern = importDAO.getBookKeepingPatternsById(item.getBookKeepingPatternType()).getPatternType();
+                    List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
+
+                    bookKeepingPatternsPositions.forEach(bookKeepingPatternsPosition -> {
+                        System.out.println(bookKeepingPatternsPosition.getName());
+
+                        try {
+                            System.out.println(bookKeepingPatternsPosition.getPositionId());
+                            System.out.println(item.getBookKeepingPatternType());
+                            List<Parts> parts =  importDAO.getPartsById(item.getBookKeepingPatternType(),bookKeepingPatternsPosition.getPositionId());
+
+                            Double partSum =0d;
+
+                            for (Parts parts1 : parts) {
+                                System.out.println(parts1.getPartsName());
+                                partSum  =importDAO.getpartSum(item.getImportId(), item.getIdList(), parts1.getPartsName());
+                                System.out.println(partSum);
+                            }
+
+
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        Double partSum=2d;
+                    });
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                System.out.println("test");
+
+
             });
             initializeComboBox(item);
         }
