@@ -45,17 +45,78 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+
+    public PodatkiSkladki getTaxSUMListById(Integer importId,Integer listId) throws SQLException {
+        PodatkiSkladki podatkiSkladki = null;
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("SELECT ROUND(sum(podatekZaliczkaUS),2) as podatekZaliczkaUS," +
+                "ROUND(sum(emerytalnaPracownik),2) as emerytalnaPracownik, " +
+                "ROUND(sum(rentowaPracownik),2) as rentowaPracownik," +
+                "ROUND(sum(chorobowaPracownik),2) as chorobowaPracownik," +
+                "ROUND(sum(wypadkowaPracownik),2) as wypadkowaPracownik," +
+                "ROUND(sum(emerytalnaFirma),2) as emerytalnaFirma," +
+                "ROUND(sum(rentowaFirma),2) as rentowaFirma," +
+                "ROUND(sum(chorobowaFirma),2) as chorobowaFirma," +
+                "ROUND(sum(wypadkowaFirma),2) as wypadkowaFirma," +
+                "ROUND(sum(zdrowotkaPracownik),2) as zdrowotkaPracownik," +
+                "ROUND(sum(FP),2) as FP," +
+                "ROUND(sum(FGSP),2) as FGSP," +
+                "ROUND(sum(FEP),2) as FEP," +
+                "ROUND(sum(PPKPracownik),2) as PPKPracownik," +
+                "ROUND(sum(PPKFirma),2) as PPKFirma " +
+                "FROM import.podatkiskladki where id_importu=? and id_listy=?;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            podatkiSkladki = new PodatkiSkladki();
+
+            podatkiSkladki.setPodatekZaliczkaUS(Math.abs(rs.getDouble("podatekZaliczkaUS")));
+            podatkiSkladki.setEmerytalnaPracownik(Math.abs(rs.getDouble("emerytalnaPracownik")));
+            podatkiSkladki.setRentowaPracownik(Math.abs(rs.getDouble("rentowaPracownik")));
+            podatkiSkladki.setChorobowaPracownik(Math.abs(rs.getDouble("chorobowaPracownik")));
+            podatkiSkladki.setWypadkowaPracownik(Math.abs(rs.getDouble("wypadkowaPracownik")));
+            podatkiSkladki.setEmerytalnaFirma(Math.abs(rs.getDouble("emerytalnaFirma")));
+            podatkiSkladki.setRentowaFirma(Math.abs(rs.getDouble("rentowaFirma")));
+            podatkiSkladki.setChorobowaFirma(Math.abs(rs.getDouble("chorobowaFirma")));
+            podatkiSkladki.setWypadkowaFirma(Math.abs(rs.getDouble("wypadkowaFirma")));
+            podatkiSkladki.setZdrowotnaPracownik(Math.abs(rs.getDouble("zdrowotkaPracownik")));
+            podatkiSkladki.setFP(Math.abs(rs.getDouble("FP")));
+            podatkiSkladki.setFGSP(Math.abs(rs.getDouble("FGSP")));
+            podatkiSkladki.setFEP(Math.abs(rs.getDouble("FEP")));
+            podatkiSkladki.setPPKPracownik(Math.abs(rs.getDouble("PPKPracownik")));
+            podatkiSkladki.setPPKFirma(Math.abs(rs.getDouble("PPKFirma")));
+        }
+        connection.close();
+        return podatkiSkladki;
+    }
+
+    public Double getPaymentSum(Integer importId,Integer listId) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Double check = 0d;
+        statement = connection.prepareStatement("SELECT sum(doWyplaty) as suma FROM import.wyplata where id_importu=? and id_listy=?;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getDouble("suma");
+        connection.close();
+        return  check;
+    }
+
     public Double getpartSum(Integer importId,Integer listId,String elementName) throws SQLException {
         PreparedStatement statement=null;
         Connection connection = getConnectcion();
         Double check = 0d;
-        statement = connection.prepareStatement("SELECT sum(wartoscElementu) as suma FROM import.element_wyplaty where id_importu=? and id_listy=? and nazwaElementu=?;");
+        statement = connection.prepareStatement("SELECT round(sum(wartoscElementu),2) as suma FROM import.element_wyplaty where id_importu=? and id_listy=? and nazwaElementu=?;");
         statement.setInt(1,importId);
         statement.setInt(2,listId);
         statement.setString(3,elementName);
         ResultSet rs = statement.executeQuery();
         while(rs.next())
-            check=rs.getDouble("suma");
+            check=Math.abs(rs.getDouble("suma"));
         connection.close();
         return  check;
     }
@@ -279,7 +340,7 @@ public class ImportDAO {
         List<BookKeepingPatternsPosition> bookKeepingPatternsPositionsList= new ArrayList<>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
+        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
         statement.setInt(1,id);
         ResultSet rs=statement.executeQuery();
         while(rs.next()){
@@ -291,6 +352,7 @@ public class ImportDAO {
             bookKeepingPatternsPosition.setAccountHas(rs.getString("konto_ma"));
             bookKeepingPatternsPosition.setAccountBlame(rs.getString("konto_wn"));
             bookKeepingPatternsPosition.setName(rs.getString("nazwa"));
+            bookKeepingPatternsPosition.setPayment(rs.getBoolean("przelew"));
             bookKeepingPatternsPositionsList.add(bookKeepingPatternsPosition);
         }
         connection.close();
@@ -314,7 +376,7 @@ public class ImportDAO {
     public void addBookKeepingPatternPosition(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("Insert into wzorce_ksiegowania_pozycje_slownik (id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto) values (?,?,?,?,?,?,?)");
+        statement = connection.prepareStatement("Insert into wzorce_ksiegowania_pozycje_slownik (id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew) values (?,?,?,?,?,?,?,?)");
         statement.setInt(1, bookKeepingPatternsPosition.getPatternId());
         statement.setInt(2, bookKeepingPatternsPosition.getPositionId());
         statement.setString(3,bookKeepingPatternsPosition.getName());
@@ -322,6 +384,7 @@ public class ImportDAO {
         statement.setString(5,bookKeepingPatternsPosition.getAccountHas());
         statement.setBoolean(6,bookKeepingPatternsPosition.getDistributor());
         statement.setString(7,bookKeepingPatternsPosition.getAccountDisributor());
+        statement.setBoolean(8,bookKeepingPatternsPosition.getPayment());
         statement.executeUpdate();
         connection.close();
     }

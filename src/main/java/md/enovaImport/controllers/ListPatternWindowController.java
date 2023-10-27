@@ -14,6 +14,7 @@ import md.enovaImport.sql.jdbc.ImportDAO;
 import md.enovaImport.sql.models.*;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
+import md.enovaImport.xml.models.PodatkiSkladki;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -120,6 +121,7 @@ public class ListPatternWindowController {
                 gridPane.add(labelId, 0, 1);
                 gridPane.add(labelOpis, 1, 1);
             }
+
             @Override
             protected void updateItem(BookKeepingPatternsFX importModelFX, boolean b) {
                 super.updateItem(importModelFX, b);
@@ -207,34 +209,56 @@ public class ListPatternWindowController {
                     List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
 
                     bookKeepingPatternsPositions.forEach(bookKeepingPatternsPosition -> {
-                        System.out.println(bookKeepingPatternsPosition.getName());
+                        System.out.println("Pozycja wzorca: "+bookKeepingPatternsPosition.getName());
 
                         try {
-                            System.out.println(bookKeepingPatternsPosition.getPositionId());
-                            System.out.println(item.getBookKeepingPatternType());
-                            List<Parts> parts =  importDAO.getPartsById(item.getBookKeepingPatternType(),bookKeepingPatternsPosition.getPositionId());
 
-                            Double partSum =0d;
-
-                            for (Parts parts1 : parts) {
-                                System.out.println(parts1.getPartsName());
-                                partSum  =importDAO.getpartSum(item.getImportId(), item.getIdList(), parts1.getPartsName());
-                                System.out.println(partSum);
+                            Double partSum = 0d;
+                            if(bookKeepingPatternsPosition.getPayment()){
+                            partSum=Math.abs(importDAO.getPaymentSum(item.getImportId(),item.getIdList()));
                             }
 
+                            List<Parts> parts = importDAO.getPartsById(item.getBookKeepingPatternType(), bookKeepingPatternsPosition.getPositionId());
+                            PodatkiSkladki podatkiSkladki= importDAO.getTaxSUMListById(item.getImportId(), item.getIdList());
 
+                            for (Parts parts1 : parts) {
+
+                                if(parts1.getPartsId()>0 && parts1.getPartsId()<16){
+
+                                    if(parts1.getPartsId()==1){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getPodatekZaliczkaUS() : partSum-podatkiSkladki.getPodatekZaliczkaUS(); }
+                                    if(parts1.getPartsId()==2){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getEmerytalnaPracownik() : partSum-podatkiSkladki.getEmerytalnaPracownik(); }
+                                    if(parts1.getPartsId()==3){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getRentowaPracownik() : partSum-podatkiSkladki.getRentowaPracownik(); }
+                                    if(parts1.getPartsId()==4){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getChorobowaPracownik() : partSum-podatkiSkladki.getChorobowaPracownik(); }
+                                    if(parts1.getPartsId()==5){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getWypadkowaPracownik() : partSum-podatkiSkladki.getWypadkowaPracownik(); }
+                                    if(parts1.getPartsId()==6){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getEmerytalnaFirma() : partSum-podatkiSkladki.getEmerytalnaFirma(); }
+                                    if(parts1.getPartsId()==7){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getRentowaFirma() : partSum-podatkiSkladki.getRentowaFirma(); }
+                                    if(parts1.getPartsId()==8){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getChorobowaFirma() : partSum-podatkiSkladki.getChorobowaFirma(); }
+                                    if(parts1.getPartsId()==9){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getWypadkowaFirma() : partSum-podatkiSkladki.getWypadkowaFirma(); }
+                                    if(parts1.getPartsId()==10){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getZdrowotnaPracownik() : partSum-podatkiSkladki.getZdrowotnaPracownik(); }
+                                    if(parts1.getPartsId()==11){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getFP() : partSum-podatkiSkladki.getFP(); }
+                                    if(parts1.getPartsId()==12){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getFGSP() : partSum-podatkiSkladki.getFGSP(); }
+                                    if(parts1.getPartsId()==13){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getFEP() : partSum-podatkiSkladki.getFEP(); }
+                                    if(parts1.getPartsId()==14){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getPPKPracownik() : partSum-podatkiSkladki.getPPKPracownik(); }
+                                    if(parts1.getPartsId()==15){partSum=parts1.getSymbol().equals("+") ? partSum+podatkiSkladki.getPPKFirma() : partSum-podatkiSkladki.getPPKFirma(); }
+
+                                }else
+
+                                if (parts1.getSymbol().equals('+')){
+                                partSum = partSum + importDAO.getpartSum(item.getImportId(), item.getIdList(), parts1.getPartsName());}
+                                else {
+                                    partSum = partSum - importDAO.getpartSum(item.getImportId(), item.getIdList(), parts1.getPartsName());
+                                }
+                            }
+                            System.out.println("Suma wartości: "+partSum);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
-                        Double partSum=2d;
+
                     });
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
-
-                System.out.println("test");
-
 
             });
             initializeComboBox(item);

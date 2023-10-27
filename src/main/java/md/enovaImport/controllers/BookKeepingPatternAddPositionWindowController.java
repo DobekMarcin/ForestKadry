@@ -14,6 +14,8 @@ import java.sql.SQLException;
 public class BookKeepingPatternAddPositionWindowController {
 
     @FXML
+    private CheckBox paymentCheckBox;
+    @FXML
     private TextField lpTextField;
     @FXML
     private TextField nameTextField;
@@ -46,6 +48,7 @@ public class BookKeepingPatternAddPositionWindowController {
             String hasAccount = hasTextField.getText();
             String distributorAccount = distibutorAccountTextField.getText();
             Boolean distributor = distributorCheckField.isSelected();
+            Boolean payment = paymentCheckBox.isSelected();
 
             bookKeepingPatternsPosition.setPatternId(bookKeepingPatternsFX.getId());
             bookKeepingPatternsPosition.setPositionId(lp);
@@ -54,6 +57,7 @@ public class BookKeepingPatternAddPositionWindowController {
             bookKeepingPatternsPosition.setAccountHas(hasAccount);
             bookKeepingPatternsPosition.setDistributor(distributor);
             bookKeepingPatternsPosition.setAccountDisributor(distributorAccount);
+            bookKeepingPatternsPosition.setPayment(payment);
 
             if (bookKeepingPatternsPosition.getPatternId() == 0 || bookKeepingPatternsPosition.getPatternId() == null || bookKeepingPatternsPosition.getPositionId() < 1 || bookKeepingPatternsPosition.getName().isEmpty() || bookKeepingPatternsPosition.getAccountBlame().isEmpty() || bookKeepingPatternsPosition.getAccountHas().isEmpty() || (bookKeepingPatternsPosition.getAccountDisributor().isEmpty() && bookKeepingPatternsPosition.getDistributor()))
                 DialogUtils.errorDialog("Podaj brakujące dane!");

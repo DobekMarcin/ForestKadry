@@ -11,6 +11,8 @@ public class BookKeepingPatternsPosition {
     private String accountHas;
     private Boolean distributor;
     private String accountDisributor;
+    private Boolean payment;
+
 
 
 
@@ -73,6 +75,14 @@ public class BookKeepingPatternsPosition {
         this.accountDisributor = accountDisributor;
     }
 
+    public Boolean getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Boolean payment) {
+        this.payment = payment;
+    }
+
     @Override
     public String toString() {
         return "BookKeepingPatternsPosition{" +
@@ -83,6 +93,7 @@ public class BookKeepingPatternsPosition {
                 ", accountHas='" + accountHas + '\'' +
                 ", distributor=" + distributor +
                 ", accountDisributor='" + accountDisributor + '\'' +
+                ", payment=" + payment +
                 '}';
     }
 }
