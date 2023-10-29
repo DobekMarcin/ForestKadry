@@ -15,8 +15,8 @@ public class BookKeepingPatternsPositionFX {
     private final SimpleBooleanProperty distributor = new SimpleBooleanProperty();
     private final SimpleStringProperty accountDistributor = new SimpleStringProperty();
     private final SimpleBooleanProperty payment = new SimpleBooleanProperty();
-
     private Button partsButton = new Button();
+    private SimpleIntegerProperty distributorPosition = new SimpleIntegerProperty();
 
     public Button getPartsButton() {
         return partsButton;
@@ -124,4 +124,18 @@ public class BookKeepingPatternsPositionFX {
     public void setPayment(boolean payment) {
         this.payment.set(payment);
     }
+
+    public int getDistributorPosition() {
+        return distributorPosition.get();
+    }
+
+    public SimpleIntegerProperty distributorPositionProperty() {
+        return distributorPosition;
+    }
+
+    public void setDistributorPosition(int distributorPosition) {
+        this.distributorPosition.set(distributorPosition);
+    }
+
+
 }

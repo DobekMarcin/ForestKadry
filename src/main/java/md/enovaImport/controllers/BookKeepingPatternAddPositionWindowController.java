@@ -1,5 +1,6 @@
 package md.enovaImport.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 
 public class BookKeepingPatternAddPositionWindowController {
 
+    @FXML
+    private TextField positionTextField;
     @FXML
     private CheckBox paymentCheckBox;
     @FXML
@@ -34,6 +37,7 @@ public class BookKeepingPatternAddPositionWindowController {
 
     public void initialize() {
         distibutorAccountTextField.disableProperty().bind(distributorCheckField.selectedProperty().not());
+        positionTextField.disableProperty().bind(distributorCheckField.selectedProperty().not());
 
 
     }
@@ -49,6 +53,7 @@ public class BookKeepingPatternAddPositionWindowController {
             String distributorAccount = distibutorAccountTextField.getText();
             Boolean distributor = distributorCheckField.isSelected();
             Boolean payment = paymentCheckBox.isSelected();
+            Integer distributorPosition=Integer.valueOf(positionTextField.getText());
 
             bookKeepingPatternsPosition.setPatternId(bookKeepingPatternsFX.getId());
             bookKeepingPatternsPosition.setPositionId(lp);
@@ -58,8 +63,11 @@ public class BookKeepingPatternAddPositionWindowController {
             bookKeepingPatternsPosition.setDistributor(distributor);
             bookKeepingPatternsPosition.setAccountDisributor(distributorAccount);
             bookKeepingPatternsPosition.setPayment(payment);
+            bookKeepingPatternsPosition.setDistributorPosition(distributorPosition);
 
-            if (bookKeepingPatternsPosition.getPatternId() == 0 || bookKeepingPatternsPosition.getPatternId() == null || bookKeepingPatternsPosition.getPositionId() < 1 || bookKeepingPatternsPosition.getName().isEmpty() || bookKeepingPatternsPosition.getAccountBlame().isEmpty() || bookKeepingPatternsPosition.getAccountHas().isEmpty() || (bookKeepingPatternsPosition.getAccountDisributor().isEmpty() && bookKeepingPatternsPosition.getDistributor()))
+            if (bookKeepingPatternsPosition.getPatternId() == 0 || bookKeepingPatternsPosition.getPatternId() == null || bookKeepingPatternsPosition.getPositionId() < 1 || bookKeepingPatternsPosition.getName().isEmpty() ||
+                    bookKeepingPatternsPosition.getAccountBlame().isEmpty() || bookKeepingPatternsPosition.getAccountHas().isEmpty() ||
+                    (bookKeepingPatternsPosition.getAccountDisributor().isEmpty() && bookKeepingPatternsPosition.getDistributor()))
                 DialogUtils.errorDialog("Podaj brakujące dane!");
             else {
                 Integer check = importDAO.checkBookKeppingPositionId(bookKeepingPatternsFX.getId(), bookKeepingPatternsPosition.getPositionId());
@@ -88,4 +96,6 @@ public class BookKeepingPatternAddPositionWindowController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
+
 }

@@ -12,6 +12,7 @@ public class BookKeepingPatternsPosition {
     private Boolean distributor;
     private String accountDisributor;
     private Boolean payment;
+    private Integer distributorPosition;
 
 
 
@@ -83,6 +84,14 @@ public class BookKeepingPatternsPosition {
         this.payment = payment;
     }
 
+    public Integer getDistributorPosition() {
+        return distributorPosition;
+    }
+
+    public void setDistributorPosition(Integer distributorPosition) {
+        this.distributorPosition = distributorPosition;
+    }
+
     @Override
     public String toString() {
         return "BookKeepingPatternsPosition{" +
@@ -94,6 +103,7 @@ public class BookKeepingPatternsPosition {
                 ", distributor=" + distributor +
                 ", accountDisributor='" + accountDisributor + '\'' +
                 ", payment=" + payment +
+                ", distributorPosition=" + distributorPosition +
                 '}';
     }
 }

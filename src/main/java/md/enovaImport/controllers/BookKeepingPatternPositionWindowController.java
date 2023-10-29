@@ -48,6 +48,7 @@ public class BookKeepingPatternPositionWindowController {
     private TableColumn distributorAccountTableColumn;
     private List<BookKeepingPatternsPosition> bookKeepingPatternsPositionList;
     private static final String BOOKKEEPING_PATTERN_ADD_POSITION = "/FXML/BookKeepingPatternAddPositionWindow.fxml";
+    private static final String BOOKKEEPING_PATTERN_EDIT_POSITION="/FXML/BookKeepingPatternEditPositionWindow.fxml";
     private static final String BOOKKEEPING_PARTS="/FXML/BookKeepingPartsWindow.fxml";
     private Stage stage;
     private BookKeepingPatternsFX bookKeepingPatternsFX;
@@ -69,6 +70,8 @@ public class BookKeepingPatternPositionWindowController {
                 bookKeepingPatternsPosition.setAccountHas(e.getAccountHas());
                 bookKeepingPatternsPosition.setAccountBlame(e.getAccountBlame());
                 bookKeepingPatternsPosition.setAccountDistributor(e.getAccountDisributor());
+                bookKeepingPatternsPosition.setPayment(e.getPayment());
+                bookKeepingPatternsPosition.setDistributorPosition(e.getDistributorPosition());
 
                 bookKeepingPatternsPosition.getPartsButton().setText("Składniki");
                 bookKeepingPatternsPosition.getPartsButton().setOnAction(f->addActionToPartsButton(e));
@@ -176,6 +179,33 @@ public class BookKeepingPatternPositionWindowController {
             }
             } catch (SQLException e) {
             DialogUtils.errorDialog("Problem z połączeniem z bazą danych!");
+        }}
+    }
+
+    public void editPositionButton() {
+        if(patternPositionTable.getSelectionModel().getSelectedItem()==null){
+            DialogUtils.informationDialog("Zaznacz pozycję!");
+        }else{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(BOOKKEEPING_PATTERN_EDIT_POSITION));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.messages"));
+        try {
+            Parent parent = fxmlLoader.load();
+            BookKeepingPatternEditPositionWindowController bookKeepingPatternEditPositionWindowController = fxmlLoader.getController();
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Edytuj pozycję!");
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            bookKeepingPatternEditPositionWindowController.setBookKeepingPatternsPositionFX((BookKeepingPatternsPositionFX) patternPositionTable.getSelectionModel().getSelectedItem());
+            bookKeepingPatternEditPositionWindowController.setStage(stage);
+            bookKeepingPatternEditPositionWindowController.initialize();
+            stage.showAndWait();
+            bookKeepingPatternsPositionsFX.clear();
+            initialize();
+        } catch (IOException exception) {
+            DialogUtils.errorDialog("Błąd aplikacji!");
+            exception.printStackTrace();
         }}
     }
 }

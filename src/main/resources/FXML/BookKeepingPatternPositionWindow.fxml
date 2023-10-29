@@ -29,6 +29,7 @@
          <children>
             <Button mnemonicParsing="false" onAction="#addPositionButton" text="%bookKeeping.pattern.add" />
             <Button mnemonicParsing="false" onAction="#deletePositionButton" text="%bookKeeping.pattern.remove" />
+            <Button mnemonicParsing="false" onAction="#editPositionButton" text="%bookKeeping.pattern.edit" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
