@@ -212,7 +212,7 @@ public class ListPatternWindowController {
                     List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
 
                     bookKeepingPatternsPositions.forEach(bookKeepingPatternsPosition -> {
-                        System.out.println("Pozycja wzorca: " + bookKeepingPatternsPosition.getName());
+                    //    System.out.println("Pozycja wzorca: " + bookKeepingPatternsPosition.getName());
 
                         try {
 
@@ -281,8 +281,17 @@ public class ListPatternWindowController {
                                 }
                             }
 
+                            PK pk = new PK();
+                            pk.setDescription(bookKeepingPatternsPosition.getName());
+                            pk.setBlame_account(bookKeepingPatternsPosition.getAccountBlame());
+                            pk.setBlame_value(partSum);
+                            pk.setHac_account(bookKeepingPatternsPosition.getAccountHas());
+                            pk.setHas_value(partSum);
+                            System.out.println(pk);
+
+
                             partSum = (double) Math.round(partSum * 100) / 100;
-                            System.out.println("Suma wartości: " + partSum);
+                      //      System.out.println("Suma wartości: " + partSum);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
