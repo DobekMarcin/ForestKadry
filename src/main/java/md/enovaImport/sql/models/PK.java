@@ -15,6 +15,8 @@ public class PK {
     @Override
     public String toString() {
         return "PK{" +
+                " Pair number= "+ pair_number+
+                ", Underpair= "+underPair_number+
                 ", description='" + description + '\'' +
                 ", blame_account='" + blame_account + '\'' +
                 ", blame_value=" + blame_value +

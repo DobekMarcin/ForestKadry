@@ -45,6 +45,30 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+
+   /* public List<String> getDepartmentListByList(Integer importId,Integer listId) throws SQLException {
+        List<String> departmentList =new ArrayList<String>();
+        Connection connection = getConnectcion();
+        PreparedStatement statement;
+        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
+        statement.setInt(1,id);
+        ResultSet rs=statement.executeQuery();
+        while(rs.next()){
+            bookKeepingPatternsPosition = new BookKeepingPatternsPosition();
+            bookKeepingPatternsPosition.setPatternId(rs.getInt("id_wzorca"));
+            bookKeepingPatternsPosition.setPositionId(rs.getInt("pozycja"));
+            bookKeepingPatternsPosition.setAccountDisributor(rs.getString("rozdzielnik_konto"));
+            bookKeepingPatternsPosition.setDistributor(rs.getBoolean("rozdzielnik"));
+            bookKeepingPatternsPosition.setAccountHas(rs.getString("konto_ma"));
+            bookKeepingPatternsPosition.setAccountBlame(rs.getString("konto_wn"));
+            bookKeepingPatternsPosition.setName(rs.getString("nazwa"));
+            bookKeepingPatternsPosition.setPayment(rs.getBoolean("przelew"));
+            bookKeepingPatternsPosition.setDistributorPosition(rs.getInt("pozycja_rozdzielnika"));
+        }
+        connection.close();
+        return bookKeepingPatternsPosition;
+    }
+*/
     public void updateBookKeepingPatternsOnePositionsById(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();

@@ -12,11 +12,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import md.enovaImport.modelsFX.*;
 import md.enovaImport.sql.jdbc.ImportDAO;
+import md.enovaImport.sql.jdbc.PostgreSQLDAO;
 import md.enovaImport.sql.models.*;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 import md.enovaImport.xml.models.PodatkiSkladki;
 
+import javax.mail.Part;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public class ListPatternWindowController {
     @FXML
     private ComboBox importComboBox;
     private List<ImportModel> importList;
+    private PostgreSQLDAO postgreSQLDAO = new PostgreSQLDAO();
 
     public void initialize() {
         try {
@@ -209,10 +212,12 @@ public class ListPatternWindowController {
 
                 try {
                     Integer bookPattern = importDAO.getBookKeepingPatternsById(item.getBookKeepingPatternType()).getPatternType();
+               //     System.out.println("WZORZEC " +bookPattern);
                     List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
 
-                    bookKeepingPatternsPositions.forEach(bookKeepingPatternsPosition -> {
-                    //    System.out.println("Pozycja wzorca: " + bookKeepingPatternsPosition.getName());
+                    for(int i=0,j=0;i<bookKeepingPatternsPositions.size();i++){
+                        BookKeepingPatternsPosition bookKeepingPatternsPosition=bookKeepingPatternsPositions.get(i);
+
 
                         try {
 
@@ -224,7 +229,9 @@ public class ListPatternWindowController {
                             List<Parts> parts = importDAO.getPartsById(item.getBookKeepingPatternType(), bookKeepingPatternsPosition.getPositionId());
                             PodatkiSkladki podatkiSkladki = importDAO.getTaxSUMListById(item.getImportId(), item.getIdList());
 
+
                             for (Parts parts1 : parts) {
+
 
                                 if (parts1.getPartsId() > 0 && parts1.getPartsId() < 16) {
 
@@ -280,23 +287,34 @@ public class ListPatternWindowController {
                                     partSum = partSum - importDAO.getpartSum(item.getImportId(), item.getIdList(), parts1.getPartsName());
                                 }
                             }
-
-                            PK pk = new PK();
-                            pk.setDescription(bookKeepingPatternsPosition.getName());
-                            pk.setBlame_account(bookKeepingPatternsPosition.getAccountBlame());
-                            pk.setBlame_value(partSum);
-                            pk.setHac_account(bookKeepingPatternsPosition.getAccountHas());
-                            pk.setHas_value(partSum);
-                            System.out.println(pk);
-
-
                             partSum = (double) Math.round(partSum * 100) / 100;
-                      //      System.out.println("Suma wartości: " + partSum);
+                            if(partSum>0) {
+                                PK pk = new PK();
+                                pk.setPair_number(i + 1);
+                                pk.setUnderPair_number(j + 1);
+                                pk.setDescription(bookKeepingPatternsPosition.getName());
+                                pk.setBlame_account(bookKeepingPatternsPosition.getAccountBlame());
+                                pk.setBlame_value(partSum);
+                                pk.setHac_account(bookKeepingPatternsPosition.getAccountHas());
+                                pk.setHas_value(partSum);
+                                postgreSQLDAO.insertPK(pk);
+                                System.out.println(pk);
+                                if(bookKeepingPatternsPosition.getDistributor()==true){
+                                 if(bookPattern==1){
+                                     System.out.println("wzorzec ksiegowania 1");
+                                 }
+                                 if(bookPattern==2){
+                                    List<String> departmentList = new ArrayList<String>();
+                                     System.out.println("wzorzec ksiegowania 2");
+                                 }
+                                }
+                            }
+
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
 
-                    });
+                    };
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
