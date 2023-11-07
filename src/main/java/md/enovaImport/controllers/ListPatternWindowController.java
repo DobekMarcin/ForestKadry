@@ -53,7 +53,7 @@ public class ListPatternWindowController {
     @FXML
     private ComboBox importComboBox;
     private List<ImportModel> importList;
-    private PostgreSQLDAO postgreSQLDAO = new PostgreSQLDAO();
+    private final PostgreSQLDAO postgreSQLDAO = new PostgreSQLDAO();
 
     public void initialize() {
         try {
@@ -212,11 +212,11 @@ public class ListPatternWindowController {
 
                 try {
                     Integer bookPattern = importDAO.getBookKeepingPatternsById(item.getBookKeepingPatternType()).getPatternType();
-               //     System.out.println("WZORZEC " +bookPattern);
+                    //     System.out.println("WZORZEC " +bookPattern);
                     List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
 
-                    for(int i=0,j=0;i<bookKeepingPatternsPositions.size();i++){
-                        BookKeepingPatternsPosition bookKeepingPatternsPosition=bookKeepingPatternsPositions.get(i);
+                    for (int i = 0, j = 0; i < bookKeepingPatternsPositions.size(); i++) {
+                        BookKeepingPatternsPosition bookKeepingPatternsPosition = bookKeepingPatternsPositions.get(i);
 
 
                         try {
@@ -288,7 +288,7 @@ public class ListPatternWindowController {
                                 }
                             }
                             partSum = (double) Math.round(partSum * 100) / 100;
-                            if(partSum>0) {
+                            if (partSum > 0) {
                                 PK pk = new PK();
                                 pk.setPair_number(i + 1);
                                 pk.setUnderPair_number(j + 1);
@@ -298,15 +298,97 @@ public class ListPatternWindowController {
                                 pk.setHac_account(bookKeepingPatternsPosition.getAccountHas());
                                 pk.setHas_value(partSum);
                                 postgreSQLDAO.insertPK(pk);
-                                System.out.println(pk);
-                                if(bookKeepingPatternsPosition.getDistributor()==true){
-                                 if(bookPattern==1){
-                                     System.out.println("wzorzec ksiegowania 1");
-                                 }
-                                 if(bookPattern==2){
-                                    List<String> departmentList = new ArrayList<String>();
-                                     System.out.println("wzorzec ksiegowania 2");
-                                 }
+                                System.out.println("### "+pk+"###");
+                                if (bookKeepingPatternsPosition.getDistributor()) {
+                                    if (bookPattern == 1) {
+                                        System.out.println("wzorzec ksiegowania 1");
+                                    }
+                                    if (bookPattern == 2) {
+                                        List<String> departmentList;
+                                        departmentList = importDAO.getDepartmentListByList(item.getImportId(), item.getIdList());
+                                    /*    for (int x = 0; x < departmentList.size(); x++) {
+                                            if (departmentList.get(x).isEmpty()) {
+                                                departmentList.set(x, item.getDepartmentCode());
+                                            }
+                                        }*/
+                                        for (String departmentItem : departmentList) {
+                                            Double distributorPartSum = 0d;
+                                            if (bookKeepingPatternsPosition.getPayment()) {
+                                                distributorPartSum = Math.abs(importDAO.getPaymentSumByDepartement(item.getImportId(), item.getIdList(),departmentItem));
+                                            }
+
+                                            List<Parts> partsDistributor = importDAO.getPartsById(item.getBookKeepingPatternType(), bookKeepingPatternsPosition.getPositionId());
+                                            PodatkiSkladki podatkiSkladkiDistributor = importDAO.getTaxSUMListByIdAndByDepartment(item.getImportId(), item.getIdList(),departmentItem);
+
+                                            for (Parts parts1 : partsDistributor) {
+
+
+                                                if (parts1.getPartsId() > 0 && parts1.getPartsId() < 16) {
+
+                                                    if (parts1.getPartsId() == 1) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getPodatekZaliczkaUS() : distributorPartSum - podatkiSkladkiDistributor.getPodatekZaliczkaUS();
+                                                    }
+                                                    if (parts1.getPartsId() == 2) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getEmerytalnaPracownik() : distributorPartSum - podatkiSkladkiDistributor.getEmerytalnaPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 3) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getRentowaPracownik() : distributorPartSum - podatkiSkladkiDistributor.getRentowaPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 4) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getChorobowaPracownik() : distributorPartSum - podatkiSkladkiDistributor.getChorobowaPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 5) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getWypadkowaPracownik() : distributorPartSum - podatkiSkladkiDistributor.getWypadkowaPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 6) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getEmerytalnaFirma() : distributorPartSum - podatkiSkladkiDistributor.getEmerytalnaFirma();
+                                                    }
+                                                    if (parts1.getPartsId() == 7) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getRentowaFirma() : distributorPartSum - podatkiSkladkiDistributor.getRentowaFirma();
+                                                    }
+                                                    if (parts1.getPartsId() == 8) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getChorobowaFirma() : distributorPartSum - podatkiSkladkiDistributor.getChorobowaFirma();
+                                                    }
+                                                    if (parts1.getPartsId() == 9) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getWypadkowaFirma() : distributorPartSum - podatkiSkladkiDistributor.getWypadkowaFirma();
+                                                    }
+                                                    if (parts1.getPartsId() == 10) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getZdrowotnaPracownik() : distributorPartSum - podatkiSkladkiDistributor.getZdrowotnaPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 11) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getFP() : distributorPartSum - podatkiSkladkiDistributor.getFP();
+                                                    }
+                                                    if (parts1.getPartsId() == 12) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getFGSP() : distributorPartSum - podatkiSkladkiDistributor.getFGSP();
+                                                    }
+                                                    if (parts1.getPartsId() == 13) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getFEP() : distributorPartSum - podatkiSkladkiDistributor.getFEP();
+                                                    }
+                                                    if (parts1.getPartsId() == 14) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getPPKPracownik() : distributorPartSum - podatkiSkladkiDistributor.getPPKPracownik();
+                                                    }
+                                                    if (parts1.getPartsId() == 15) {
+                                                        distributorPartSum = parts1.getSymbol().equals("+") ? distributorPartSum + podatkiSkladkiDistributor.getPPKFirma() : distributorPartSum - podatkiSkladkiDistributor.getPPKFirma();
+                                                    }
+
+                                                } else if (parts1.getSymbol().equals("+")) {
+                                                    {
+                                                        distributorPartSum = distributorPartSum + importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(),departmentItem);}
+                                                } else {
+                                                    distributorPartSum = distributorPartSum - importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(),departmentItem);
+                                                }
+                                            }
+
+                                            distributorPartSum = (double) Math.round(distributorPartSum * 100) / 100;
+                                            System.out.println(departmentItem+" "+distributorPartSum);
+                                        }
+
+                                        System.out.println(departmentList);
+                                        System.out.println("wzorzec ksiegowania 2");
+                                    }
+
+
+
                                 }
                             }
 
@@ -314,7 +396,7 @@ public class ListPatternWindowController {
                             throw new RuntimeException(ex);
                         }
 
-                    };
+                    }
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);

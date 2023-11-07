@@ -45,30 +45,105 @@ public class ImportDAO {
         return DriverManager.getConnection(url, username, password);
     }
 
+    public Double getpartSumByDepartment(Integer importId,Integer listId,String elementName,String department) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Double check = 0d;
+        statement = connection.prepareStatement("SELECT sum(wartoscElementu) as suma FROM import.wyplata  A " +
+                "left join element_wyplaty B on B.id_importu=A.id_importu and B.id_wyplata=A.id_wyplaty and B.id_listy=A.id_listy " +
+                "where A.id_importu=? and A.id_listy=? and nazwaElementu=? and A.kodWydzialuKosztowego=?");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        statement.setString(3,elementName);
+        statement.setString(4,department);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=Math.abs(rs.getDouble("suma"));
+        connection.close();
+        return  check;
+    }
 
-   /* public List<String> getDepartmentListByList(Integer importId,Integer listId) throws SQLException {
+    public PodatkiSkladki getTaxSUMListByIdAndByDepartment(Integer importId,Integer listId,String department) throws SQLException {
+        PodatkiSkladki podatkiSkladki = null;
+        PreparedStatement statement;
+        Connection connection = getConnectcion();
+        statement = connection.prepareStatement("SELECT ROUND(sum(A.podatekZaliczkaUS),2) as podatekZaliczkaUS," +
+                "ROUND(sum(A.emerytalnaPracownik),2) as emerytalnaPracownik, " +
+                "ROUND(sum(A.rentowaPracownik),2) as rentowaPracownik," +
+                "ROUND(sum(A.chorobowaPracownik),2) as chorobowaPracownik," +
+                "ROUND(sum(A.wypadkowaPracownik),2) as wypadkowaPracownik," +
+                "ROUND(sum(A.emerytalnaFirma),2) as emerytalnaFirma," +
+                "ROUND(sum(A.rentowaFirma),2) as rentowaFirma," +
+                "ROUND(sum(A.chorobowaFirma),2) as chorobowaFirma," +
+                "ROUND(sum(A.wypadkowaFirma),2) as wypadkowaFirma," +
+                "ROUND(sum(A.zdrowotkaPracownik),2) as zdrowotkaPracownik," +
+                "ROUND(sum(A.FP),2) as FP," +
+                "ROUND(sum(A.FGSP),2) as FGSP," +
+                "ROUND(sum(A.FEP),2) as FEP," +
+                "ROUND(sum(A.PPKPracownik),2) as PPKPracownik," +
+                "ROUND(sum(A.PPKFirma),2) as PPKFirma " +
+                "FROM import.podatkiskladki A " +
+                "left join import.wyplata B on B.id_importu=A.id_importu and B.id_listy=A.id_listy and A.id_wyplata=B.id_wyplaty " +
+                "where A.id_importu=? and A.id_listy=? and B.kodWydzialuKosztowego=?  ;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        statement.setString(3,department);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            podatkiSkladki = new PodatkiSkladki();
+
+            podatkiSkladki.setPodatekZaliczkaUS(Math.abs(rs.getDouble("podatekZaliczkaUS")));
+            podatkiSkladki.setEmerytalnaPracownik(Math.abs(rs.getDouble("emerytalnaPracownik")));
+            podatkiSkladki.setRentowaPracownik(Math.abs(rs.getDouble("rentowaPracownik")));
+            podatkiSkladki.setChorobowaPracownik(Math.abs(rs.getDouble("chorobowaPracownik")));
+            podatkiSkladki.setWypadkowaPracownik(Math.abs(rs.getDouble("wypadkowaPracownik")));
+            podatkiSkladki.setEmerytalnaFirma(Math.abs(rs.getDouble("emerytalnaFirma")));
+            podatkiSkladki.setRentowaFirma(Math.abs(rs.getDouble("rentowaFirma")));
+            podatkiSkladki.setChorobowaFirma(Math.abs(rs.getDouble("chorobowaFirma")));
+            podatkiSkladki.setWypadkowaFirma(Math.abs(rs.getDouble("wypadkowaFirma")));
+            podatkiSkladki.setZdrowotnaPracownik(Math.abs(rs.getDouble("zdrowotkaPracownik")));
+            podatkiSkladki.setFP(Math.abs(rs.getDouble("FP")));
+            podatkiSkladki.setFGSP(Math.abs(rs.getDouble("FGSP")));
+            podatkiSkladki.setFEP(Math.abs(rs.getDouble("FEP")));
+            podatkiSkladki.setPPKPracownik(Math.abs(rs.getDouble("PPKPracownik")));
+            podatkiSkladki.setPPKFirma(Math.abs(rs.getDouble("PPKFirma")));
+        }
+        connection.close();
+        return podatkiSkladki;
+    }
+
+    public Double getPaymentSumByDepartement(Integer importId,Integer listId,String department) throws SQLException {
+        PreparedStatement statement=null;
+        Connection connection = getConnectcion();
+        Double check = 0d;
+        statement = connection.prepareStatement("SELECT sum(doWyplaty) as suma FROM import.wyplata where id_importu=? and id_listy=? and kodWydzialuKosztowego=?;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
+        statement.setString(3,department);
+        ResultSet rs = statement.executeQuery();
+        while(rs.next())
+            check=rs.getDouble("suma");
+        connection.close();
+        return  check;
+    }
+
+    public List<String> getDepartmentListByList(Integer importId,Integer listId) throws SQLException {
         List<String> departmentList =new ArrayList<String>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
-        statement.setInt(1,id);
+        statement= connection.prepareStatement("SELECT kodWydzialuKosztowego as wydzial FROM import.wyplata where id_importu=? and id_listy=? group by kodWydzialuKosztowego order by kodWydzialuKosztowego;");
+        statement.setInt(1,importId);
+        statement.setInt(2,listId);
         ResultSet rs=statement.executeQuery();
+        String departemnt="";
         while(rs.next()){
-            bookKeepingPatternsPosition = new BookKeepingPatternsPosition();
-            bookKeepingPatternsPosition.setPatternId(rs.getInt("id_wzorca"));
-            bookKeepingPatternsPosition.setPositionId(rs.getInt("pozycja"));
-            bookKeepingPatternsPosition.setAccountDisributor(rs.getString("rozdzielnik_konto"));
-            bookKeepingPatternsPosition.setDistributor(rs.getBoolean("rozdzielnik"));
-            bookKeepingPatternsPosition.setAccountHas(rs.getString("konto_ma"));
-            bookKeepingPatternsPosition.setAccountBlame(rs.getString("konto_wn"));
-            bookKeepingPatternsPosition.setName(rs.getString("nazwa"));
-            bookKeepingPatternsPosition.setPayment(rs.getBoolean("przelew"));
-            bookKeepingPatternsPosition.setDistributorPosition(rs.getInt("pozycja_rozdzielnika"));
+            departemnt=rs.getString("wydzial");
+            departmentList.add(departemnt);
         }
         connection.close();
-        return bookKeepingPatternsPosition;
+        return departmentList;
     }
-*/
+
     public void updateBookKeepingPatternsOnePositionsById(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
