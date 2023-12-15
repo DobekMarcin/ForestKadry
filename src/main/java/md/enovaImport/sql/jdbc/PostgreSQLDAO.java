@@ -1,8 +1,12 @@
 package md.enovaImport.sql.jdbc;
 
+import md.enovaImport.sql.models.OrderWork;
 import md.enovaImport.sql.models.PK;
+import md.enovaImport.xml.models.Wyplata;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostgreSQLDAO {
 
@@ -86,5 +90,36 @@ public class PostgreSQLDAO {
         connection.close();
     }
 
+    public List<OrderWork> getOrderWork(Integer month, Integer year, List<Wyplata> wyplataList) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        List<OrderWork> orderWorksList = new ArrayList<>();
 
+
+        String workers = "(";
+        for (int i = 0; i < wyplataList.size(); i++) {
+            if (i + 1 < wyplataList.size()) {
+                workers = workers + wyplataList.get(i).getKodPracownika() + ",";
+            } else {
+                workers = workers + wyplataList.get(i).getKodPracownika() + ")";
+            }
+        }
+        String query = ("Select C.rok,C.nr,A.id_zlecenia,g.rou2(sum(pracochlonnosc_h)) as suma from g.prod_karty_pracy A " + "left join g.prod_karty_pracy_pracownicy B " + "on B.rok=A.rok and B.mc=A.mc and B.nr=A.nr " + "LEFT JOIN G.MZK_ZLECENIA c ON c.id=A.id_zlecenia " + "where A.rok=? and A.mc=? " + "and B.id_pracownika in " + workers + " group by A.id_zlecenia,C.rok,C.nr having sum(pracochlonnosc_h)>0 order by A.id_zlecenia");
+
+        statement = connection.prepareStatement(query);
+
+        statement.setInt(1, year);
+        statement.setInt(2, month);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            OrderWork orderWork = new OrderWork();
+            orderWork.setOrderId(rs.getInt("id_zlecenia"));
+            orderWork.setOrderNumber(rs.getInt("nr"));
+            orderWork.setOrderYear(rs.getInt("rok"));
+            orderWork.setTime(rs.getDouble("suma"));
+            orderWorksList.add(orderWork);
+        }
+        connection.close();
+        return orderWorksList;
+    }
 }

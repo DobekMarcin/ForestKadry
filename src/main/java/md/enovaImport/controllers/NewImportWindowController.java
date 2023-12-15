@@ -83,8 +83,9 @@ public class NewImportWindowController {
         fileChooser.getExtensionFilters().addAll(extensionFilter);
         fileChooser.setTitle(FXMLUtils.getBundle("import.file"));
         file = fileChooser.showOpenDialog(stage);
-        if (file != null)
-            labelImportFileproperty.setValue(file.getName());
+        if (file != null){
+            System.out.println(file.getName());
+        labelImportFileproperty.setValue( file.getName());}
         else
             labelImportFileproperty.setValue("");
     }
@@ -102,7 +103,8 @@ if(checkname){
 }else {
     readXmlSaxParser = new ReadXmlSaxParser();
     try {
-        List<ListaPlac> listaPlac = readXmlSaxParser.getImportData(file.getAbsolutePath());
+
+        List<ListaPlac> listaPlac = readXmlSaxParser.getImportData(file.toURI().toURL().toExternalForm());
         ImportModel importModel = new ImportModel();
         importModel.setOpis(importNameProperty.getValue());
         importModel.setDataImportu(new Date());

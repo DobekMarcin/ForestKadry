@@ -97,7 +97,7 @@ public class SendEmailWindowController {
             final Label labelData = new Label();
 
             {
-                gridPane.getColumnConstraints().addAll(new ColumnConstraints(10, 30, 10), new ColumnConstraints(200, 200, 100));
+                gridPane.getColumnConstraints().addAll(new ColumnConstraints(10, 30, 30), new ColumnConstraints(200, 200, 100));
                 gridPane.add(labelId, 0, 1);
                 gridPane.add(labelOpis, 1, 1);
             }

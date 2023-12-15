@@ -16,12 +16,11 @@ public class ImportDAO {
     private final static String password = "root";
 
     //TEST
-  //  private static String url = "jdbc:mysql://127.0.0.1:3306/import";
- //   private static String username = "root";
- //   private static String password = "Tetragramaton123";
+    //  private static String url = "jdbc:mysql://127.0.0.1:3306/import";
+    //   private static String username = "root";
+    //   private static String password = "Tetragramaton123";
 
     public static void connectionTest() {
-
 
 
         System.out.println("Connecting database...");
@@ -31,8 +30,7 @@ public class ImportDAO {
 
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery("Select * from import_list");
-            while (rs.next())
-                System.out.println(rs.getInt(1) + "  " + rs.getString(2) + "  " + rs.getString(3));
+            while (rs.next()) System.out.println(rs.getInt(1) + "  " + rs.getString(2) + "  " + rs.getString(3));
 
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
@@ -40,54 +38,48 @@ public class ImportDAO {
     }
 
 
-
     private Connection getConnectcion() throws SQLException {
         return DriverManager.getConnection(url, username, password);
     }
 
-    public Double getpartSumByDepartment(Integer importId,Integer listId,String elementName,String department) throws SQLException {
-        PreparedStatement statement=null;
+    public String getDepartmentDistrubotorAccountPosition(String department, Integer departmentPosition) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        Double check = 0d;
-        statement = connection.prepareStatement("SELECT sum(wartoscElementu) as suma FROM import.wyplata  A " +
-                "left join element_wyplaty B on B.id_importu=A.id_importu and B.id_wyplata=A.id_wyplaty and B.id_listy=A.id_listy " +
-                "where A.id_importu=? and A.id_listy=? and nazwaElementu=? and A.kodWydzialuKosztowego=?");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setString(3,elementName);
-        statement.setString(4,department);
+        String account = "";
+        statement = connection.prepareStatement("SELECT konto FROM import.korg A left join import.korg_konta B on A.id=B.korg_id where kod=? and lp=?;");
+        statement.setString(1, department);
+        statement.setInt(2, departmentPosition);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=Math.abs(rs.getDouble("suma"));
+        while (rs.next()) account = rs.getString("konto");
         connection.close();
-        return  check;
+        return account;
     }
 
-    public PodatkiSkladki getTaxSUMListByIdAndByDepartment(Integer importId,Integer listId,String department) throws SQLException {
+
+
+    public Double getpartSumByDepartment(Integer importId, Integer listId, String elementName, String department) throws SQLException {
+        PreparedStatement statement = null;
+        Connection connection = getConnectcion();
+        Double check = 0d;
+        statement = connection.prepareStatement("SELECT sum(wartoscElementu) as suma FROM import.wyplata  A " + "left join element_wyplaty B on B.id_importu=A.id_importu and B.id_wyplata=A.id_wyplaty and B.id_listy=A.id_listy " + "where A.id_importu=? and A.id_listy=? and nazwaElementu=? and A.kodWydzialuKosztowego=?");
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setString(3, elementName);
+        statement.setString(4, department);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) check = Math.abs(rs.getDouble("suma"));
+        connection.close();
+        return check;
+    }
+
+    public PodatkiSkladki getTaxSUMListByIdAndByDepartment(Integer importId, Integer listId, String department) throws SQLException {
         PodatkiSkladki podatkiSkladki = null;
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("SELECT ROUND(sum(A.podatekZaliczkaUS),2) as podatekZaliczkaUS," +
-                "ROUND(sum(A.emerytalnaPracownik),2) as emerytalnaPracownik, " +
-                "ROUND(sum(A.rentowaPracownik),2) as rentowaPracownik," +
-                "ROUND(sum(A.chorobowaPracownik),2) as chorobowaPracownik," +
-                "ROUND(sum(A.wypadkowaPracownik),2) as wypadkowaPracownik," +
-                "ROUND(sum(A.emerytalnaFirma),2) as emerytalnaFirma," +
-                "ROUND(sum(A.rentowaFirma),2) as rentowaFirma," +
-                "ROUND(sum(A.chorobowaFirma),2) as chorobowaFirma," +
-                "ROUND(sum(A.wypadkowaFirma),2) as wypadkowaFirma," +
-                "ROUND(sum(A.zdrowotkaPracownik),2) as zdrowotkaPracownik," +
-                "ROUND(sum(A.FP),2) as FP," +
-                "ROUND(sum(A.FGSP),2) as FGSP," +
-                "ROUND(sum(A.FEP),2) as FEP," +
-                "ROUND(sum(A.PPKPracownik),2) as PPKPracownik," +
-                "ROUND(sum(A.PPKFirma),2) as PPKFirma " +
-                "FROM import.podatkiskladki A " +
-                "left join import.wyplata B on B.id_importu=A.id_importu and B.id_listy=A.id_listy and A.id_wyplata=B.id_wyplaty " +
-                "where A.id_importu=? and A.id_listy=? and B.kodWydzialuKosztowego=?  ;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setString(3,department);
+        statement = connection.prepareStatement("SELECT ROUND(sum(A.podatekZaliczkaUS),2) as podatekZaliczkaUS," + "ROUND(sum(A.emerytalnaPracownik),2) as emerytalnaPracownik, " + "ROUND(sum(A.rentowaPracownik),2) as rentowaPracownik," + "ROUND(sum(A.chorobowaPracownik),2) as chorobowaPracownik," + "ROUND(sum(A.wypadkowaPracownik),2) as wypadkowaPracownik," + "ROUND(sum(A.emerytalnaFirma),2) as emerytalnaFirma," + "ROUND(sum(A.rentowaFirma),2) as rentowaFirma," + "ROUND(sum(A.chorobowaFirma),2) as chorobowaFirma," + "ROUND(sum(A.wypadkowaFirma),2) as wypadkowaFirma," + "ROUND(sum(A.zdrowotkaPracownik),2) as zdrowotkaPracownik," + "ROUND(sum(A.FP),2) as FP," + "ROUND(sum(A.FGSP),2) as FGSP," + "ROUND(sum(A.FEP),2) as FEP," + "ROUND(sum(A.PPKPracownik),2) as PPKPracownik," + "ROUND(sum(A.PPKFirma),2) as PPKFirma " + "FROM import.podatkiskladki A " + "left join import.wyplata B on B.id_importu=A.id_importu and B.id_listy=A.id_listy and A.id_wyplata=B.id_wyplaty " + "where A.id_importu=? and A.id_listy=? and B.kodWydzialuKosztowego=?  ;");
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setString(3, department);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             podatkiSkladki = new PodatkiSkladki();
@@ -112,32 +104,31 @@ public class ImportDAO {
         return podatkiSkladki;
     }
 
-    public Double getPaymentSumByDepartement(Integer importId,Integer listId,String department) throws SQLException {
-        PreparedStatement statement=null;
+    public Double getPaymentSumByDepartement(Integer importId, Integer listId, String department) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Double check = 0d;
         statement = connection.prepareStatement("SELECT sum(doWyplaty) as suma FROM import.wyplata where id_importu=? and id_listy=? and kodWydzialuKosztowego=?;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setString(3,department);
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setString(3, department);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getDouble("suma");
+        while (rs.next()) check = rs.getDouble("suma");
         connection.close();
-        return  check;
+        return check;
     }
 
-    public List<String> getDepartmentListByList(Integer importId,Integer listId) throws SQLException {
-        List<String> departmentList =new ArrayList<String>();
+    public List<String> getDepartmentListByList(Integer importId, Integer listId) throws SQLException {
+        List<String> departmentList = new ArrayList<String>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("SELECT kodWydzialuKosztowego as wydzial FROM import.wyplata where id_importu=? and id_listy=? group by kodWydzialuKosztowego order by kodWydzialuKosztowego;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        ResultSet rs=statement.executeQuery();
-        String departemnt="";
-        while(rs.next()){
-            departemnt=rs.getString("wydzial");
+        statement = connection.prepareStatement("SELECT kodWydzialuKosztowego as wydzial FROM import.wyplata where id_importu=? and id_listy=? group by kodWydzialuKosztowego order by kodWydzialuKosztowego;");
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        ResultSet rs = statement.executeQuery();
+        String departemnt = "";
+        while (rs.next()) {
+            departemnt = rs.getString("wydzial");
             departmentList.add(departemnt);
         }
         connection.close();
@@ -147,29 +138,28 @@ public class ImportDAO {
     public void updateBookKeepingPatternsOnePositionsById(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("UPDATE wzorce_ksiegowania_pozycje_slownik set nazwa=?,konto_wn=?,konto_ma=?,rozdzielnik=?,rozdzielnik_konto=?,przelew=?,pozycja_rozdzielnika=? " +
-                "where id_wzorca=? and pozycja=?");
+        statement = connection.prepareStatement("UPDATE wzorce_ksiegowania_pozycje_slownik set nazwa=?,konto_wn=?,konto_ma=?,rozdzielnik=?,rozdzielnik_konto=?,przelew=?,pozycja_rozdzielnika=? " + "where id_wzorca=? and pozycja=?");
         statement.setString(1, bookKeepingPatternsPosition.getName());
         statement.setString(2, bookKeepingPatternsPosition.getAccountBlame());
-        statement.setString(3,bookKeepingPatternsPosition.getAccountHas());
-        statement.setBoolean(4,bookKeepingPatternsPosition.getDistributor());
-        statement.setString(5,bookKeepingPatternsPosition.getAccountDisributor());
-        statement.setBoolean(6,bookKeepingPatternsPosition.getPayment());
-        statement.setInt(7,bookKeepingPatternsPosition.getDistributorPosition());
-        statement.setInt(8,bookKeepingPatternsPosition.getPatternId());
-        statement.setInt(9,bookKeepingPatternsPosition.getPositionId());
+        statement.setString(3, bookKeepingPatternsPosition.getAccountHas());
+        statement.setBoolean(4, bookKeepingPatternsPosition.getDistributor());
+        statement.setString(5, bookKeepingPatternsPosition.getAccountDisributor());
+        statement.setBoolean(6, bookKeepingPatternsPosition.getPayment());
+        statement.setInt(7, bookKeepingPatternsPosition.getDistributorPosition());
+        statement.setInt(8, bookKeepingPatternsPosition.getPatternId());
+        statement.setInt(9, bookKeepingPatternsPosition.getPositionId());
         statement.executeUpdate();
         connection.close();
     }
 
     public BookKeepingPatternsPosition getBookKeepingPatternsOnePositionsById(Integer id) throws SQLException {
-        BookKeepingPatternsPosition bookKeepingPatternsPosition= null;
+        BookKeepingPatternsPosition bookKeepingPatternsPosition = null;
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
-        statement.setInt(1,id);
-        ResultSet rs=statement.executeQuery();
-        while(rs.next()){
+        statement = connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
             bookKeepingPatternsPosition = new BookKeepingPatternsPosition();
             bookKeepingPatternsPosition.setPatternId(rs.getInt("id_wzorca"));
             bookKeepingPatternsPosition.setPositionId(rs.getInt("pozycja"));
@@ -185,28 +175,13 @@ public class ImportDAO {
         return bookKeepingPatternsPosition;
     }
 
-    public PodatkiSkladki getTaxSUMListById(Integer importId,Integer listId) throws SQLException {
+    public PodatkiSkladki getTaxSUMListById(Integer importId, Integer listId) throws SQLException {
         PodatkiSkladki podatkiSkladki = null;
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("SELECT ROUND(sum(podatekZaliczkaUS),2) as podatekZaliczkaUS," +
-                "ROUND(sum(emerytalnaPracownik),2) as emerytalnaPracownik, " +
-                "ROUND(sum(rentowaPracownik),2) as rentowaPracownik," +
-                "ROUND(sum(chorobowaPracownik),2) as chorobowaPracownik," +
-                "ROUND(sum(wypadkowaPracownik),2) as wypadkowaPracownik," +
-                "ROUND(sum(emerytalnaFirma),2) as emerytalnaFirma," +
-                "ROUND(sum(rentowaFirma),2) as rentowaFirma," +
-                "ROUND(sum(chorobowaFirma),2) as chorobowaFirma," +
-                "ROUND(sum(wypadkowaFirma),2) as wypadkowaFirma," +
-                "ROUND(sum(zdrowotkaPracownik),2) as zdrowotkaPracownik," +
-                "ROUND(sum(FP),2) as FP," +
-                "ROUND(sum(FGSP),2) as FGSP," +
-                "ROUND(sum(FEP),2) as FEP," +
-                "ROUND(sum(PPKPracownik),2) as PPKPracownik," +
-                "ROUND(sum(PPKFirma),2) as PPKFirma " +
-                "FROM import.podatkiskladki where id_importu=? and id_listy=?;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
+        statement = connection.prepareStatement("SELECT ROUND(sum(podatekZaliczkaUS),2) as podatekZaliczkaUS," + "ROUND(sum(emerytalnaPracownik),2) as emerytalnaPracownik, " + "ROUND(sum(rentowaPracownik),2) as rentowaPracownik," + "ROUND(sum(chorobowaPracownik),2) as chorobowaPracownik," + "ROUND(sum(wypadkowaPracownik),2) as wypadkowaPracownik," + "ROUND(sum(emerytalnaFirma),2) as emerytalnaFirma," + "ROUND(sum(rentowaFirma),2) as rentowaFirma," + "ROUND(sum(chorobowaFirma),2) as chorobowaFirma," + "ROUND(sum(wypadkowaFirma),2) as wypadkowaFirma," + "ROUND(sum(zdrowotkaPracownik),2) as zdrowotkaPracownik," + "ROUND(sum(FP),2) as FP," + "ROUND(sum(FGSP),2) as FGSP," + "ROUND(sum(FEP),2) as FEP," + "ROUND(sum(PPKPracownik),2) as PPKPracownik," + "ROUND(sum(PPKFirma),2) as PPKFirma " + "FROM import.podatkiskladki where id_importu=? and id_listy=?;");
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             podatkiSkladki = new PodatkiSkladki();
@@ -231,41 +206,39 @@ public class ImportDAO {
         return podatkiSkladki;
     }
 
-    public Double getPaymentSum(Integer importId,Integer listId) throws SQLException {
-        PreparedStatement statement=null;
+    public Double getPaymentSum(Integer importId, Integer listId) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Double check = 0d;
         statement = connection.prepareStatement("SELECT sum(doWyplaty) as suma FROM import.wyplata where id_importu=? and id_listy=?;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getDouble("suma");
+        while (rs.next()) check = rs.getDouble("suma");
         connection.close();
-        return  check;
+        return check;
     }
 
-    public Double getpartSum(Integer importId,Integer listId,String elementName) throws SQLException {
-        PreparedStatement statement=null;
+    public Double getpartSum(Integer importId, Integer listId, String elementName) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Double check = 0d;
         statement = connection.prepareStatement("SELECT round(sum(wartoscElementu),2) as suma FROM import.element_wyplaty where id_importu=? and id_listy=? and nazwaElementu=?;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setString(3,elementName);
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setString(3, elementName);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=Math.abs(rs.getDouble("suma"));
+        while (rs.next()) check = Math.abs(rs.getDouble("suma"));
         connection.close();
-        return  check;
+        return check;
     }
 
-    public void deleteDepartmentPositionById(DepartmentDistributorPositionFX departmentDistributorPositionFX ) throws SQLException {
+    public void deleteDepartmentPositionById(DepartmentDistributorPositionFX departmentDistributorPositionFX) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from korg_konta where korg_id=? and lp=?");
-        statement.setInt(1,departmentDistributorPositionFX.getKorg_id());
-        statement.setInt(2,departmentDistributorPositionFX.getId());
+        statement.setInt(1, departmentDistributorPositionFX.getKorg_id());
+        statement.setInt(2, departmentDistributorPositionFX.getId());
         statement.executeUpdate();
         connection.close();
     }
@@ -275,7 +248,7 @@ public class ImportDAO {
         Connection connection = getConnectcion();
         List<DepartmentDistributorPosition> departmentsPositions = new ArrayList<>();
         statement = connection.prepareStatement(" SELECT korg_id,lp,konto FROM korg_konta where korg_id=? order by lp");
-        statement.setInt(1,departmentId);
+        statement.setInt(1, departmentId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             DepartmentDistributorPosition departmentDistributorPosition = new DepartmentDistributorPosition();
@@ -294,23 +267,22 @@ public class ImportDAO {
         statement = connection.prepareStatement("INSERT INTO korg_konta (korg_id,lp,konto) VALUES (?,?,?);");
         statement.setInt(1, departmentDistributorPosition.getKorg_id());
         statement.setInt(2, departmentDistributorPosition.getId());
-        statement.setString(3,departmentDistributorPosition.getAccount());
+        statement.setString(3, departmentDistributorPosition.getAccount());
         statement.executeUpdate();
         connection.close();
     }
 
     public Integer checkDepartmentDistributorPositionById(DepartmentDistributorPosition departmentDistributorPosition) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Integer check = 0;
         statement = connection.prepareStatement("Select count(*) as ilosc from korg_konta where korg_id=? and lp=?;");
-        statement.setInt(1,departmentDistributorPosition.getKorg_id());
-        statement.setInt(2,departmentDistributorPosition.getId());
+        statement.setInt(1, departmentDistributorPosition.getKorg_id());
+        statement.setInt(2, departmentDistributorPosition.getId());
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getInt("ilosc");
+        while (rs.next()) check = rs.getInt("ilosc");
         connection.close();
-        return  check;
+        return check;
     }
 
     public void addDepartment(Department department) throws SQLException {
@@ -319,7 +291,7 @@ public class ImportDAO {
         statement = connection.prepareStatement("INSERT INTO korg (id,kod,nazwa) VALUES (?,?,?);");
         statement.setInt(1, department.getId());
         statement.setString(2, department.getCode());
-        statement.setString(3,department.getName());
+        statement.setString(3, department.getName());
         statement.executeUpdate();
         connection.close();
     }
@@ -329,24 +301,23 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("UPDATE korg set kod=?,nazwa=? where id=?");
-        statement.setString(1,department.getCode());
-        statement.setString(2,department.getName());
-        statement.setInt(3,department.getId());
+        statement.setString(1, department.getCode());
+        statement.setString(2, department.getName());
+        statement.setInt(3, department.getId());
         statement.executeUpdate();
         connection.close();
     }
 
     public Integer checkdepartmentById(Integer id) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Integer check = 0;
         statement = connection.prepareStatement("Select count(*) as ilosc from korg where id=?;");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getInt("ilosc");
+        while (rs.next()) check = rs.getInt("ilosc");
         connection.close();
-        return  check;
+        return check;
     }
 
 
@@ -369,52 +340,51 @@ public class ImportDAO {
 
 
     public Integer checkListPatternById(Integer patternId) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Integer check = 0;
         statement = connection.prepareStatement("Select count(*) as ilosc from lista_plac_wzorce where id_wzorca=?;");
-        statement.setInt(1,patternId);
+        statement.setInt(1, patternId);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getInt("ilosc");
+        while (rs.next()) check = rs.getInt("ilosc");
         connection.close();
-        return  check;
+        return check;
     }
 
-    public void updatesPartsById(PartsFX partsFX,Integer patternId, Integer positionId) throws SQLException {
+    public void updatesPartsById(PartsFX partsFX, Integer patternId, Integer positionId) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("UPDATE skladniki set symbol=(select znak from (Select case when symbol='+' then '-' else '+' end as znak from skladniki where id_wzorca=? and pozycja=? and lp=?) X) where id_wzorca=? and pozycja=? and lp=?");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionId);
-        statement.setInt(3,partsFX.getId());
-        statement.setInt(4,patternId);
-        statement.setInt(5,positionId);
-        statement.setInt(6,partsFX.getId());
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionId);
+        statement.setInt(3, partsFX.getId());
+        statement.setInt(4, patternId);
+        statement.setInt(5, positionId);
+        statement.setInt(6, partsFX.getId());
         statement.executeUpdate();
         connection.close();
     }
 
-    public void deletePartsById(PartsFX partsFX,Integer patternId, Integer positionId) throws SQLException {
+    public void deletePartsById(PartsFX partsFX, Integer patternId, Integer positionId) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from skladniki where id_wzorca=? and pozycja=? and lp=?");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionId);
-        statement.setInt(3,partsFX.getId());
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionId);
+        statement.setInt(3, partsFX.getId());
         statement.executeUpdate();
         connection.close();
     }
 
-    public List<ElementSlownik> getDictionaryElementListOnlyNoParts(Integer patternId,Integer positionId) throws SQLException {
+    public List<ElementSlownik> getDictionaryElementListOnlyNoParts(Integer patternId, Integer positionId) throws SQLException {
         List<ElementSlownik> elementSlownikList = new ArrayList<>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement=connection.prepareStatement("Select A.id,A.nazwa,A.alias,A.czy_drukowac,A.kolejnosc from elementy_slownik A where A.id not in (Select B.id_elementu from skladniki B where B.id_wzorca=? and pozycja=?)");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionId);
+        statement = connection.prepareStatement("Select A.id,A.nazwa,A.alias,A.czy_drukowac,A.kolejnosc from elementy_slownik A where A.id not in (Select B.id_elementu from skladniki B where B.id_wzorca=? and pozycja=?)");
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionId);
         ResultSet rs = statement.executeQuery();
-        while (rs.next()){
+        while (rs.next()) {
             ElementSlownik elementSlownik = new ElementSlownik();
             elementSlownik.setId(rs.getInt("id"));
             elementSlownik.setNazwa(rs.getString("nazwa"));
@@ -425,18 +395,18 @@ public class ImportDAO {
             elementSlownikList.add(elementSlownik);
         }
         connection.close();
-        return  elementSlownikList;
+        return elementSlownikList;
     }
 
-    public List<Parts> getPartsById(Integer patternId,Integer positionid) throws SQLException {
-        List<Parts> parts= new ArrayList<>();
+    public List<Parts> getPartsById(Integer patternId, Integer positionid) throws SQLException {
+        List<Parts> parts = new ArrayList<>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("SELECT A.id_wzorca,A.pozycja,A.lp,A.id_elementu,B.nazwa,A.symbol  FROM import.skladniki A left join elementy_slownik B on B.id=A.id_elementu  where A.id_wzorca=? and A.pozycja=? order by lp;");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionid);
-        ResultSet rs=statement.executeQuery();
-        while(rs.next()){
+        statement = connection.prepareStatement("SELECT A.id_wzorca,A.pozycja,A.lp,A.id_elementu,B.nazwa,A.symbol  FROM import.skladniki A left join elementy_slownik B on B.id=A.id_elementu  where A.id_wzorca=? and A.pozycja=? order by lp;");
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionid);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
 
             Parts parts1 = new Parts();
             parts1.setPatternId(rs.getInt("id_wzorca"));
@@ -457,32 +427,32 @@ public class ImportDAO {
         statement = connection.prepareStatement("Insert into skladniki (id_wzorca,pozycja,lp,id_elementu,symbol) values (?,?,(Select idek from (Select coalesce(max(A.lp)+1,1) as idek from skladniki A where A.id_wzorca=? and A.pozycja=?) x ),?,?)");
         statement.setInt(1, patternId);
         statement.setInt(2, position);
-        statement.setInt(3,patternId);
-        statement.setInt(4,position);
-        statement.setInt(5,elementSlownikFX.getId());
-        statement.setString(6,"+");
+        statement.setInt(3, patternId);
+        statement.setInt(4, position);
+        statement.setInt(5, elementSlownikFX.getId());
+        statement.setString(6, "+");
         statement.executeUpdate();
         connection.close();
     }
 
-    public void deleteBookKeepingPatternPositionById(Integer patternId,Integer positionId) throws SQLException {
+    public void deleteBookKeepingPatternPositionById(Integer patternId, Integer positionId) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? and pozycja=?");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionId);
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionId);
         statement.executeUpdate();
         connection.close();
     }
 
     public List<BookKeepingPatternsPosition> getBookKeepingPatternsPositionsById(Integer id) throws SQLException {
-        List<BookKeepingPatternsPosition> bookKeepingPatternsPositionsList= new ArrayList<>();
+        List<BookKeepingPatternsPosition> bookKeepingPatternsPositionsList = new ArrayList<>();
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
-        statement.setInt(1,id);
-        ResultSet rs=statement.executeQuery();
-        while(rs.next()){
+        statement = connection.prepareStatement("Select id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? order by pozycja;");
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
             BookKeepingPatternsPosition bookKeepingPatternsPosition = new BookKeepingPatternsPosition();
             bookKeepingPatternsPosition.setPatternId(rs.getInt("id_wzorca"));
             bookKeepingPatternsPosition.setPositionId(rs.getInt("pozycja"));
@@ -499,18 +469,17 @@ public class ImportDAO {
         return bookKeepingPatternsPositionsList;
     }
 
-    public Integer checkBookKeppingPositionId(Integer patternId,Integer positionId) throws SQLException {
-        PreparedStatement statement=null;
+    public Integer checkBookKeppingPositionId(Integer patternId, Integer positionId) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Integer check = 0;
         statement = connection.prepareStatement("Select count(*) as ilosc from wzorce_ksiegowania_pozycje_slownik where id_wzorca=? and pozycja=?");
-        statement.setInt(1,patternId);
-        statement.setInt(2,positionId);
+        statement.setInt(1, patternId);
+        statement.setInt(2, positionId);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getInt("ilosc");
+        while (rs.next()) check = rs.getInt("ilosc");
         connection.close();
-        return  check;
+        return check;
     }
 
     public void addBookKeepingPatternPosition(BookKeepingPatternsPosition bookKeepingPatternsPosition) throws SQLException {
@@ -519,28 +488,27 @@ public class ImportDAO {
         statement = connection.prepareStatement("Insert into wzorce_ksiegowania_pozycje_slownik (id_wzorca,pozycja,nazwa,konto_wn,konto_ma,rozdzielnik,rozdzielnik_konto,przelew,pozycja_rozdzielnika) values (?,?,?,?,?,?,?,?,?)");
         statement.setInt(1, bookKeepingPatternsPosition.getPatternId());
         statement.setInt(2, bookKeepingPatternsPosition.getPositionId());
-        statement.setString(3,bookKeepingPatternsPosition.getName());
-        statement.setString(4,bookKeepingPatternsPosition.getAccountBlame());
-        statement.setString(5,bookKeepingPatternsPosition.getAccountHas());
-        statement.setBoolean(6,bookKeepingPatternsPosition.getDistributor());
-        statement.setString(7,bookKeepingPatternsPosition.getAccountDisributor());
-        statement.setBoolean(8,bookKeepingPatternsPosition.getPayment());
-        statement.setInt(9,bookKeepingPatternsPosition.getDistributorPosition());
+        statement.setString(3, bookKeepingPatternsPosition.getName());
+        statement.setString(4, bookKeepingPatternsPosition.getAccountBlame());
+        statement.setString(5, bookKeepingPatternsPosition.getAccountHas());
+        statement.setBoolean(6, bookKeepingPatternsPosition.getDistributor());
+        statement.setString(7, bookKeepingPatternsPosition.getAccountDisributor());
+        statement.setBoolean(8, bookKeepingPatternsPosition.getPayment());
+        statement.setInt(9, bookKeepingPatternsPosition.getDistributorPosition());
         statement.executeUpdate();
         connection.close();
     }
 
     public Boolean checkBookKeppingGenerate(Integer idImport) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Boolean check = false;
         statement = connection.prepareStatement("Select ks from import_list where id=?");
-        statement.setInt(1,idImport);
+        statement.setInt(1, idImport);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=rs.getBoolean("ks");
+        while (rs.next()) check = rs.getBoolean("ks");
         connection.close();
-        return  check;
+        return check;
     }
 
     public void updateImportListBookKeppingStatus(Integer importId) throws SQLException {
@@ -554,13 +522,13 @@ public class ImportDAO {
     }
 
     public BookKeepingPatterns getBookKeepingPatternsById(Integer id) throws SQLException {
-        BookKeepingPatterns bookKeepingPatterns=null;
+        BookKeepingPatterns bookKeepingPatterns = null;
         Connection connection = getConnectcion();
         PreparedStatement statement;
-        statement= connection.prepareStatement("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id where A.id=?;");
-        statement.setInt(1,id);
-        ResultSet rs=statement.executeQuery();
-        while(rs.next()){
+        statement = connection.prepareStatement("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id where A.id=?;");
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
             bookKeepingPatterns = new BookKeepingPatterns();
             bookKeepingPatterns.setId(rs.getInt("id"));
             bookKeepingPatterns.setPatterName(rs.getString("nazwa_wzorca"));
@@ -579,17 +547,17 @@ public class ImportDAO {
         statement = connection.prepareStatement("Update lista_plac_wzorce set id_wzorca=? where id_importu=? and id_listy=?");
         statement.setInt(1, payListPatternFX.getBookKeepingPatternType());
         statement.setInt(2, payListPatternFX.getImportId());
-        statement.setInt(3,payListPatternFX.getIdList());
+        statement.setInt(3, payListPatternFX.getIdList());
         statement.executeUpdate();
         connection.close();
     }
+
     public List<PaylistPattern> getBookKeepingPayListPattern(Integer importId) throws SQLException {
         List<PaylistPattern> paylistPatterns = new ArrayList<>();
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("SELECT A.id_importu,A.id_listy,B.numerListy,B.opisListy,B.dataListy,B.dataWyplaty,B.okresListyOd,B.okresListyDo,B.kodWydzialu,B.zatwierdzona,A.id_wzorca,C.nazwa_wzorca, A.zaksiegowana " +
-                "FROM lista_plac_wzorce A left join lista_plac B on B.id_importu=A.id_importu and B.id_listy=A.id_listy left join wzorce_ksiegowania C on C.id=A.id_wzorca where A.id_importu=? order by A.id_listy");
-        statement.setInt(1,importId);
+        statement = connection.prepareStatement("SELECT A.id_importu,A.id_listy,B.numerListy,B.opisListy,B.dataListy,B.dataWyplaty,B.okresListyOd,B.okresListyDo,B.kodWydzialu,B.zatwierdzona,A.id_wzorca,C.nazwa_wzorca, A.zaksiegowana " + "FROM lista_plac_wzorce A left join lista_plac B on B.id_importu=A.id_importu and B.id_listy=A.id_listy left join wzorce_ksiegowania C on C.id=A.id_wzorca where A.id_importu=? order by A.id_listy");
+        statement.setInt(1, importId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             PaylistPattern paylistPattern = new PaylistPattern();
@@ -627,17 +595,18 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from wzorce_ksiegowania where id=?");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
+
     public void addNewBookKeepingPattern(BookKeepingPatterns bookKeepingPatterns) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("INSERT INTO wzorce_ksiegowania(id,nazwa_wzorca,typ_wzorca,uwagi) VALUES ((Select B.idek from (Select coalesce(max(id+1),1) as idek from wzorce_ksiegowania) B),?,?,?);");
         statement.setString(1, bookKeepingPatterns.getPatterName());
-        statement.setInt(2,bookKeepingPatterns.getPatternType());
-        statement.setString(3,bookKeepingPatterns.getPatternComment());
+        statement.setInt(2, bookKeepingPatterns.getPatternType());
+        statement.setString(3, bookKeepingPatterns.getPatternComment());
         statement.executeUpdate();
         connection.close();
     }
@@ -645,9 +614,9 @@ public class ImportDAO {
     public List<BookKeepingPatterns> getBookKeepingPatterns() throws SQLException {
         List<BookKeepingPatterns> bookKeepingPatternsList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
-        ResultSet rs=statement.executeQuery("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id;");
-        while(rs.next()){
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("Select A.id,A.nazwa_wzorca,A.typ_wzorca,B.nazwa_typu,A.uwagi from wzorce_ksiegowania A left join typy_ksiegowania B on A.typ_wzorca=B.id;");
+        while (rs.next()) {
             BookKeepingPatterns bookKeepingPatterns = new BookKeepingPatterns();
             bookKeepingPatterns.setId(rs.getInt("id"));
             bookKeepingPatterns.setPatterName(rs.getString("nazwa_wzorca"));
@@ -663,9 +632,9 @@ public class ImportDAO {
     public List<BookKeepingPatternType> getBookKeepingPatternsType() throws SQLException {
         List<BookKeepingPatternType> bookKeepingPatternTypes = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
-        ResultSet rs=statement.executeQuery("Select id,nazwa_typu from typy_ksiegowania order by id;");
-        while(rs.next()){
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("Select id,nazwa_typu from typy_ksiegowania order by id;");
+        while (rs.next()) {
             BookKeepingPatternType bookKeepingPatterns = new BookKeepingPatternType();
             bookKeepingPatterns.setId(rs.getInt("id"));
             bookKeepingPatterns.setName(rs.getString("nazwa_typu"));
@@ -685,29 +654,27 @@ public class ImportDAO {
 
 
     public Boolean checkImportName(String importName) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Boolean check = false;
         statement = connection.prepareStatement("Select count(*) as nameCount from import_list where opis=?");
-        statement.setString(1,importName);
+        statement.setString(1, importName);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            check=(rs.getInt("nameCount")>0 ? true:false);
+        while (rs.next()) check = (rs.getInt("nameCount") > 0);
         connection.close();
-        return  check;
+        return check;
     }
 
     public String getEmail(Integer code) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         String email = "";
         statement = connection.prepareStatement("Select email from lista_pracownikow where kod_pracownika=? and czy_wyslac=1");
-        statement.setInt(1,code);
+        statement.setInt(1, code);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            email=rs.getString("email");
+        while (rs.next()) email = rs.getString("email");
         connection.close();
-        return  email;
+        return email;
     }
 
     public void updateSendEmailStatus(SendMailFX sendMailFX) throws SQLException {
@@ -716,9 +683,9 @@ public class ImportDAO {
         statement = connection.prepareStatement("Update send_mail set czy_wyslano=? where id_importu=? and id_listy=? and id_wyplaty=? and kod=?");
         statement.setBoolean(1, sendMailFX.getIsSend());
         statement.setInt(2, sendMailFX.getImportId());
-        statement.setInt(3,sendMailFX.getListId());
-        statement.setInt(4,sendMailFX.getAmountId());
-        statement.setInt(5,sendMailFX.getCode());
+        statement.setInt(3, sendMailFX.getListId());
+        statement.setInt(4, sendMailFX.getAmountId());
+        statement.setInt(5, sendMailFX.getCode());
         statement.executeUpdate();
         connection.close();
     }
@@ -728,26 +695,26 @@ public class ImportDAO {
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Update send_mail set sciezka_do_pliku=?,czy_jest_plik=? where id_importu=? and id_listy=? and id_wyplaty=? and kod=?");
         statement.setString(1, sendMailFX.getPathFile());
-        statement.setInt(2,1);
+        statement.setInt(2, 1);
         statement.setInt(3, sendMailFX.getImportId());
-        statement.setInt(4,sendMailFX.getListId());
-        statement.setInt(5,sendMailFX.getAmountId());
-        statement.setInt(6,sendMailFX.getCode());
+        statement.setInt(4, sendMailFX.getListId());
+        statement.setInt(5, sendMailFX.getAmountId());
+        statement.setInt(6, sendMailFX.getCode());
         statement.executeUpdate();
         connection.close();
     }
 
 
-    public List<PdfElement> getElementtoPdf(List<PdfElement> pdfElementList,SendMailFX sendMailFX) throws SQLException {
-        PreparedStatement statement=null;
+    public List<PdfElement> getElementtoPdf(List<PdfElement> pdfElementList, SendMailFX sendMailFX) throws SQLException {
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         PdfElement pdfElement = null;
         statement = connection.prepareStatement("SELECT B.id as id,A.nazwaElementu as nazwa,sum(A.dniElementu) as czas,sum(A.dniElementu) as dni,sum(A.wartoscElementu) as wartosc,B.kolejnosc as kolejnosc,B.alias as alias FROM element_wyplaty A left join elementy_slownik B on A.nazwaElementu=B.nazwa where A.id_importu=? and A.id_listy=? and A.id_wyplata=? and B.czy_drukowac=1 group by id,nazwa,kolejnosc,alias");
-        statement.setInt(1,sendMailFX.getImportId());
-        statement.setInt(2,sendMailFX.getListId());
-        statement.setInt(3,sendMailFX.getAmountId());
+        statement.setInt(1, sendMailFX.getImportId());
+        statement.setInt(2, sendMailFX.getListId());
+        statement.setInt(3, sendMailFX.getAmountId());
         ResultSet rs = statement.executeQuery();
-        while(rs.next()) {
+        while (rs.next()) {
             pdfElement = new PdfElement();
             pdfElement.setId(rs.getInt("id"));
             pdfElement.setElementName(rs.getString("nazwa"));
@@ -759,15 +726,15 @@ public class ImportDAO {
             pdfElementList.add(pdfElement);
         }
         connection.close();
-        return  pdfElementList;
+        return pdfElementList;
     }
 
     public List<ElementSlownik> getDictionaryTaxElementList() throws SQLException {
         List<ElementSlownik> elementSlownikList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("Select id,nazwa,alias,czy_drukowac,kolejnosc from elementy_slownik where id<16 order by id");
-        while (rs.next()){
+        while (rs.next()) {
             ElementSlownik elementSlownik = new ElementSlownik();
             elementSlownik.setId(rs.getInt("id"));
             elementSlownik.setNazwa(rs.getString("nazwa"));
@@ -778,20 +745,20 @@ public class ImportDAO {
             elementSlownikList.add(elementSlownik);
         }
         connection.close();
-        return  elementSlownikList;
+        return elementSlownikList;
     }
 
 
     public PodatkiSkladki getTax(SendMailFX sendMailFX) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         PodatkiSkladki podatki = new PodatkiSkladki();
         statement = connection.prepareStatement("SELECT sum(podatekZaliczkaUS) as value1,sum(emerytalnaPracownik) as value2,sum(rentowaPracownik) as value3,sum(chorobowaPracownik) as value4,sum(wypadkowaPracownik) as value5,sum(emerytalnaFirma) as value6,sum(rentowaFirma) as value7,sum(chorobowaFirma) as value8,sum(wypadkowaFirma) as value9,sum(zdrowotkaPracownik) as value10,sum(FP) as value11,sum(FGSP) as value12,sum(FEP) as value13,sum(PPKPracownik) as value14,sum(PPKFirma) as value15 FROM podatkiskladki where id_importu=? and id_listy=? and id_wyplata=?");
-        statement.setInt(1,sendMailFX.getImportId());
-        statement.setInt(2,sendMailFX.getListId());
-        statement.setInt(3,sendMailFX.getAmountId());
+        statement.setInt(1, sendMailFX.getImportId());
+        statement.setInt(2, sendMailFX.getListId());
+        statement.setInt(3, sendMailFX.getAmountId());
         ResultSet rs = statement.executeQuery();
-        while(rs.next()) {
+        while (rs.next()) {
             podatki.setPodatekZaliczkaUS(rs.getDouble("value1"));
             podatki.setEmerytalnaPracownik(rs.getDouble("value2"));
             podatki.setRentowaPracownik(rs.getDouble("value3"));
@@ -809,20 +776,19 @@ public class ImportDAO {
             podatki.setPPKFirma(rs.getDouble("value15"));
         }
         connection.close();
-        return  podatki;
+        return podatki;
     }
 
     public String getImportName(Integer idImport) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         String importName = "";
         statement = connection.prepareStatement("Select opis from import_list where id=?");
-        statement.setInt(1,idImport);
+        statement.setInt(1, idImport);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-            importName=rs.getString("opis");
+        while (rs.next()) importName = rs.getString("opis");
         connection.close();
-        return  importName;
+        return importName;
     }
 
     public List<SendMail> getSendMailList(Integer importId) throws SQLException {
@@ -830,7 +796,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("SELECT id_importu,id_listy,nazwa_listy,kod,imie_nazwisko,sciezka_do_pliku,czy_jest_plik,czy_wyslano,id_wyplaty,przelew,dataWyplaty,dataListy,kwotaStawki FROM send_mail where id_importu=? order by imie_nazwisko");
-        statement.setInt(1,importId);
+        statement.setInt(1, importId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             SendMail sendMail = new SendMail();
@@ -867,27 +833,22 @@ public class ImportDAO {
     public void generateEmailList(Integer idImport) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("INSERT INTO send_mail (id_importu,id_listy,nazwa_listy,kod,imie_nazwisko,sciezka_do_pliku,czy_jest_plik,czy_wyslano,id_wyplaty,przelew,dataWyplaty,dataListy,kwotaStawki) " +
-                "SELECT A.id_importu,A.id_listy,B.numerListy,A.kodPracownika,A.nazwiskoImie,'',false,false,A.id_wyplaty,A.doWyplaty,B.dataWyplaty,B.okresListyOd,A.kwotaStawki FROM wyplata A " +
-                "left join lista_plac B on B.id_importu=A.id_importu and B.id_listy=A.id_listy " +
-                "where A.kodPracownika in (Select kod_pracownika from lista_pracownikow where czy_wyslac=1) and A.id_importu=? " +
-                "and A.kodPracownika not in (Select kod from send_mail where id_importu=A.id_importu and id_listy=A.id_listy) order by A.kodPracownika;");
+        statement = connection.prepareStatement("INSERT INTO send_mail (id_importu,id_listy,nazwa_listy,kod,imie_nazwisko,sciezka_do_pliku,czy_jest_plik,czy_wyslano,id_wyplaty,przelew,dataWyplaty,dataListy,kwotaStawki) " + "SELECT A.id_importu,A.id_listy,B.numerListy,A.kodPracownika,A.nazwiskoImie,'',false,false,A.id_wyplaty,A.doWyplaty,B.dataWyplaty,B.okresListyOd,A.kwotaStawki FROM wyplata A " + "left join lista_plac B on B.id_importu=A.id_importu and B.id_listy=A.id_listy " + "where A.kodPracownika in (Select kod_pracownika from lista_pracownikow where czy_wyslac=1) and A.id_importu=? " + "and A.kodPracownika not in (Select kod from send_mail where id_importu=A.id_importu and id_listy=A.id_listy) order by A.kodPracownika;");
         statement.setInt(1, idImport);
         statement.executeUpdate();
         connection.close();
     }
 
     public Boolean checkEmailGenerate(Integer idImport) throws SQLException {
-        PreparedStatement statement=null;
+        PreparedStatement statement = null;
         Connection connection = getConnectcion();
         Boolean check = false;
         statement = connection.prepareStatement("Select email from import_list where id=?");
-        statement.setInt(1,idImport);
+        statement.setInt(1, idImport);
         ResultSet rs = statement.executeQuery();
-        while(rs.next())
-        check=rs.getBoolean("email");
+        while (rs.next()) check = rs.getBoolean("email");
         connection.close();
-        return  check;
+        return check;
     }
 
     public void addNewPersonDictionary(SimplePerson person) throws SQLException {
@@ -895,9 +856,9 @@ public class ImportDAO {
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("INSERT INTO lista_pracownikow(kod_pracownika,imie_nazwisko,email,czy_wyslac) VALUES (?,?,?,?)");
         statement.setInt(1, person.getCode());
-        statement.setString(2,person.getName());
-        statement.setString(3,new String(""));
-        statement.setBoolean(4,false);
+        statement.setString(2, person.getName());
+        statement.setString(3, "");
+        statement.setBoolean(4, false);
         statement.executeUpdate();
         connection.close();
     }
@@ -907,9 +868,9 @@ public class ImportDAO {
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("INSERT INTO lista_pracownikow(kod_pracownika,imie_nazwisko,email,czy_wyslac) VALUES (?,?,?,?)");
         statement.setInt(1, person.getCode());
-        statement.setString(2,person.getName());
-        statement.setString(3,person.getEmail());
-        statement.setBoolean(4,person.getSend());
+        statement.setString(2, person.getName());
+        statement.setString(3, person.getEmail());
+        statement.setBoolean(4, person.getSend());
         statement.executeUpdate();
         connection.close();
     }
@@ -924,7 +885,7 @@ public class ImportDAO {
         connection.close();
     }
 
-    public void updateDictionaryPersonSend(Integer personCode,Boolean send) throws SQLException {
+    public void updateDictionaryPersonSend(Integer personCode, Boolean send) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Update lista_pracownikow set czy_wyslac=? where kod_pracownika=?");
@@ -937,9 +898,9 @@ public class ImportDAO {
     public List<Person> getPersonDictionaryList() throws SQLException {
         List<Person> personList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
-        ResultSet rs=statement.executeQuery("SELECT kod_pracownika,imie_nazwisko,email,czy_wyslac FROM import.lista_pracownikow order by imie_nazwisko");
-        while(rs.next()){
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT kod_pracownika,imie_nazwisko,email,czy_wyslac FROM import.lista_pracownikow order by imie_nazwisko");
+        while (rs.next()) {
             Person person = new Person();
             person.setCode(rs.getInt("kod_pracownika"));
             person.setName(rs.getString("imie_nazwisko"));
@@ -954,9 +915,9 @@ public class ImportDAO {
     public List<SimplePerson> getNewPersonDictionaryPosition() throws SQLException {
         List<SimplePerson> personList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
-        ResultSet rs=statement.executeQuery("Select distinct kodPracownika,nazwiskoImie from wyplata where kodPracownika not in (Select kod_pracownika from lista_pracownikow) order by nazwiskoimie");
-        while(rs.next()){
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("Select distinct kodPracownika,nazwiskoImie from wyplata where kodPracownika not in (Select kod_pracownika from lista_pracownikow) order by nazwiskoimie");
+        while (rs.next()) {
             SimplePerson person = new SimplePerson();
             person.setCode(rs.getInt("kodPracownika"));
             person.setName(rs.getString("nazwiskoImie"));
@@ -967,20 +928,19 @@ public class ImportDAO {
     }
 
 
-
     public Integer getCountNewPersonPersonList() throws SQLException {
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
         Integer count = 0;
         ResultSet rs = statement.executeQuery("Select count(distinct kodPracownika) as ilosc from wyplata where kodPracownika not in (Select kod_pracownika from lista_pracownikow)");
-        while (rs.next()){
-            count=rs.getInt("ilosc");
+        while (rs.next()) {
+            count = rs.getInt("ilosc");
         }
         connection.close();
-        return  count;
+        return count;
     }
 
-    public void updateDictionaryElementPrint(Integer elementId,Boolean print) throws SQLException {
+    public void updateDictionaryElementPrint(Integer elementId, Boolean print) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Update elementy_slownik set czy_drukowac=? where id=?");
@@ -1000,7 +960,7 @@ public class ImportDAO {
         connection.close();
     }
 
-    public void updateDictionaryElementOrder(Integer elementId,Integer order) throws SQLException {
+    public void updateDictionaryElementOrder(Integer elementId, Integer order) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Update elementy_slownik set kolejnosc=? where id=?");
@@ -1012,14 +972,14 @@ public class ImportDAO {
 
     public Integer getNewElementDictionaryPositionCount() throws SQLException {
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
         Integer count = 0;
         ResultSet rs = statement.executeQuery("SELECT  count(distinct nazwaElementu) as ilosc FROM import.element_wyplaty A where nazwaElementu not in (Select nazwa from import.elementy_slownik)");
-        while (rs.next()){
-            count=rs.getInt("ilosc");
+        while (rs.next()) {
+            count = rs.getInt("ilosc");
         }
         connection.close();
-        return  count;
+        return count;
     }
 
     public void addNewElementDictionary(Element element) throws SQLException {
@@ -1034,11 +994,11 @@ public class ImportDAO {
     public List<Element> getNewElementDictionaryPosition() throws SQLException {
         List<Element> elementList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
-        ResultSet rs=statement.executeQuery("SELECT  distinct nazwaElementu as nazwa FROM import.element_wyplaty A where nazwaElementu not in (Select nazwa from import.elementy_slownik) order by nazwaElementu");
-        while(rs.next()){
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT  distinct nazwaElementu as nazwa FROM import.element_wyplaty A where nazwaElementu not in (Select nazwa from import.elementy_slownik) order by nazwaElementu");
+        while (rs.next()) {
             Element element = new Element();
-                    element.setElementName(rs.getString("nazwa"));
+            element.setElementName(rs.getString("nazwa"));
             elementList.add(element);
         }
         connection.close();
@@ -1048,9 +1008,9 @@ public class ImportDAO {
     public List<ElementSlownik> getDictionaryElementList() throws SQLException {
         List<ElementSlownik> elementSlownikList = new ArrayList<>();
         Connection connection = getConnectcion();
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("Select id,nazwa,alias,czy_drukowac,kolejnosc from elementy_slownik");
-        while (rs.next()){
+        while (rs.next()) {
             ElementSlownik elementSlownik = new ElementSlownik();
             elementSlownik.setId(rs.getInt("id"));
             elementSlownik.setNazwa(rs.getString("nazwa"));
@@ -1061,7 +1021,7 @@ public class ImportDAO {
             elementSlownikList.add(elementSlownik);
         }
         connection.close();
-        return  elementSlownikList;
+        return elementSlownikList;
     }
 
     public List<ImportModel> getImportList() throws SQLException {
@@ -1082,13 +1042,13 @@ public class ImportDAO {
         return importModelList;
     }
 
-    public List<Wyplata> getWyplataList(Integer importId,Integer listId) throws SQLException {
+    public List<Wyplata> getWyplataList(Integer importId, Integer listId) throws SQLException {
         List<Wyplata> wyplataList = new ArrayList<>();
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Select id_wyplaty,numerWyplaty,kodpracownika,kodWydzialuKosztowego,doWyplaty,nazwiskoImie,pesel,kwotaStawki from wyplata where id_importu=? and id_listy=?");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             Wyplata wyplata = new Wyplata();
@@ -1106,16 +1066,15 @@ public class ImportDAO {
         return wyplataList;
     }
 
-    public List<PodatkiSkladki> getTaxListById(Integer importId,Integer listId,Integer paymentId,Integer elementId) throws SQLException {
+    public List<PodatkiSkladki> getTaxListById(Integer importId, Integer listId, Integer paymentId, Integer elementId) throws SQLException {
         List<PodatkiSkladki> podatkiSkladkiList = new ArrayList<>();
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("SELECT id_skladki, podatekZaliczkaUS, emerytalnaPracownik, rentowaPracownik, chorobowaPracownik, wypadkowaPracownik, emerytalnaFirma, rentowaFirma, " +
-                "    chorobowaFirma, wypadkowaFirma, zdrowotkaPracownik, FP, FGSP, FEP, PPKPracownik, PPKFirma FROM podatkiskladki where id_importu=? and id_listy=? and id_wyplata=? and id_elementu=?;");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setInt(3,paymentId);
-        statement.setInt(4,elementId);
+        statement = connection.prepareStatement("SELECT id_skladki, podatekZaliczkaUS, emerytalnaPracownik, rentowaPracownik, chorobowaPracownik, wypadkowaPracownik, emerytalnaFirma, rentowaFirma, " + "    chorobowaFirma, wypadkowaFirma, zdrowotkaPracownik, FP, FGSP, FEP, PPKPracownik, PPKFirma FROM podatkiskladki where id_importu=? and id_listy=? and id_wyplata=? and id_elementu=?;");
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setInt(3, paymentId);
+        statement.setInt(4, elementId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             PodatkiSkladki podatkiSkladki = new PodatkiSkladki();
@@ -1144,14 +1103,14 @@ public class ImportDAO {
     }
 
 
-    public List<ElementWyplaty> getElementListById(Integer importId,Integer listId,Integer paymentId) throws SQLException {
+    public List<ElementWyplaty> getElementListById(Integer importId, Integer listId, Integer paymentId) throws SQLException {
         List<ElementWyplaty> elementWyplatyList = new ArrayList<>();
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Select id_elementu,nazwaElementu,kodElementu,okresElementuOd,okresElementuDo,czasElementu,dniElementu,wartoscElementu from element_wyplaty where id_importu=? and id_listy=? and id_wyplata=?");
-        statement.setInt(1,importId);
-        statement.setInt(2,listId);
-        statement.setInt(3,paymentId);
+        statement.setInt(1, importId);
+        statement.setInt(2, listId);
+        statement.setInt(3, paymentId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             ElementWyplaty elementWyplaty = new ElementWyplaty();
@@ -1174,7 +1133,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("SELECT id_listy,numerListy,opisListy,dataListy,dataWyplaty,okresListyOd,okresListyDo,kodWydzialu,zatwierdzona FROM lista_plac where id_importu=?");
-        statement.setInt(1,importId);
+        statement.setInt(1, importId);
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             ListaPlac listaPlac = new ListaPlac();
@@ -1200,6 +1159,7 @@ public class ImportDAO {
         statement.executeUpdate();
         connection.close();
     }
+
     public void deleteImportList() throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
@@ -1264,6 +1224,7 @@ public class ImportDAO {
         statement.executeUpdate();
         connection.close();
     }
+
     public void deletePersonSlownik() throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
@@ -1271,6 +1232,7 @@ public class ImportDAO {
         statement.executeUpdate();
         connection.close();
     }
+
     public Integer getImportId() throws SQLException {
         Integer id = null;
         Connection connection = getConnectcion();
@@ -1288,8 +1250,8 @@ public class ImportDAO {
         statement = connection.prepareStatement("INSERT INTO import.import_list(id,opis,data_importu,email,ks)VALUES ((Select coalesce(max(a.id+1),1) from import.import_list a),?,?,?,?);");
         statement.setString(1, importModel.getOpis());
         statement.setDate(2, new Date(importModel.getDataImportu().getTime()));
-        statement.setBoolean(3,false);
-        statement.setBoolean(4,false);
+        statement.setBoolean(3, false);
+        statement.setBoolean(4, false);
         statement.executeUpdate();
         connection.close();
     }
@@ -1297,8 +1259,7 @@ public class ImportDAO {
     public void addListaPlac(ListaPlac listaPlac, Integer idListy, Integer idImportu) throws SQLException {
         PreparedStatement statement = null;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("INSERT INTO import.lista_plac(id_importu,id_listy,numerListy,opisListy,dataListy,dataWyplaty,okresListyOd,okresListyDo," +
-                "kodWydzialu,zatwierdzona) VALUES (?,?,?,?,?,?,?,?,?,?)");
+        statement = connection.prepareStatement("INSERT INTO import.lista_plac(id_importu,id_listy,numerListy,opisListy,dataListy,dataWyplaty,okresListyOd,okresListyDo," + "kodWydzialu,zatwierdzona) VALUES (?,?,?,?,?,?,?,?,?,?)");
         statement.setInt(1, idImportu);
         statement.setInt(2, idListy);
         statement.setString(3, listaPlac.getNumerListy());
@@ -1323,10 +1284,10 @@ public class ImportDAO {
         statement.setInt(4, wyplata.getNumerWyplaty());
         statement.setInt(5, wyplata.getKodPracownika());
         statement.setString(6, wyplata.getKodWydzialuKosztowego());
-        statement.setDouble(7,wyplata.getDoWyplaty());
-        statement.setString(8,wyplata.getNazwiskoImie());
-        statement.setString(9,wyplata.getPesel());
-        statement.setDouble(10,wyplata.getKwotaStawki());
+        statement.setDouble(7, wyplata.getDoWyplaty());
+        statement.setString(8, wyplata.getNazwiskoImie());
+        statement.setString(9, wyplata.getPesel());
+        statement.setDouble(10, wyplata.getKwotaStawki());
 
         statement.executeUpdate();
         connection.close();
@@ -1335,8 +1296,7 @@ public class ImportDAO {
     public void addElementWyplaty(ElementWyplaty elementWyplaty, Integer idWyplaty, Integer idElementu, Integer idListy, Integer idImportu) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("INSERT INTO import.element_wyplaty (id_importu,id_listy,id_wyplata,id_elementu,nazwaElementu,kodElementu,okresElementuOd,okresElementuDo,czasElementu,dniElementu,wartoscElementu)" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+        statement = connection.prepareStatement("INSERT INTO import.element_wyplaty (id_importu,id_listy,id_wyplata,id_elementu,nazwaElementu,kodElementu,okresElementuOd,okresElementuDo,czasElementu,dniElementu,wartoscElementu)" + "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
         statement.setInt(1, idImportu);
         statement.setInt(2, idListy);
         statement.setInt(3, idWyplaty);
@@ -1355,10 +1315,7 @@ public class ImportDAO {
     public void addPodatkiSkladki(PodatkiSkladki podatkiSkladki, Integer id_listy, Integer id_wyplata, Integer id_elementu, Integer id_skladki, Integer idImportu) throws SQLException {
         PreparedStatement statement;
         Connection connection = getConnectcion();
-        statement = connection.prepareStatement("INSERT INTO import.podatkiskladki" +
-                "(id_importu,id_listy,id_wyplata,id_elementu,id_skladki,podatekZaliczkaUS,emerytalnaPracownik,rentowaPracownik,chorobowaPracownik,wypadkowaPracownik," +
-                "emerytalnaFirma,rentowaFirma,chorobowaFirma,wypadkowaFirma,zdrowotkaPracownik,FP,FGSP,FEP,PPKPracownik,PPKFirma)" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
+        statement = connection.prepareStatement("INSERT INTO import.podatkiskladki" + "(id_importu,id_listy,id_wyplata,id_elementu,id_skladki,podatekZaliczkaUS,emerytalnaPracownik,rentowaPracownik,chorobowaPracownik,wypadkowaPracownik," + "emerytalnaFirma,rentowaFirma,chorobowaFirma,wypadkowaFirma,zdrowotkaPracownik,FP,FGSP,FEP,PPKPracownik,PPKFirma)" + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
         statement.setInt(1, idImportu);
         statement.setInt(2, id_listy);
         statement.setInt(3, id_wyplata);
@@ -1388,7 +1345,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from import_list where id=?");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
@@ -1397,7 +1354,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from lista_plac where id_importu=? ");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
@@ -1406,7 +1363,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from wyplata where id_importu=?");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
@@ -1415,7 +1372,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from element_wyplaty where id_importu=?");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
@@ -1425,7 +1382,7 @@ public class ImportDAO {
         PreparedStatement statement;
         Connection connection = getConnectcion();
         statement = connection.prepareStatement("Delete from podatkiskladki where id_importu=?");
-        statement.setInt(1,id);
+        statement.setInt(1, id);
         statement.executeUpdate();
         connection.close();
     }
@@ -1436,8 +1393,8 @@ public class ImportDAO {
         statement = connection.prepareStatement("Update send_mail set czy_jest_plik=0, czy_wyslano=0, sciezka_do_pliku='' where id_importu=? and id_listy=? and id_wyplaty=? and kod=?");
         statement.setInt(1, item.getImportId());
         statement.setInt(2, item.getListId());
-        statement.setInt(3,item.getAmountId());
-        statement.setInt(4,item.getCode());
+        statement.setInt(3, item.getAmountId());
+        statement.setInt(4, item.getCode());
         statement.executeUpdate();
         connection.close();
     }

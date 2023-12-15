@@ -17,11 +17,16 @@ import md.enovaImport.sql.models.*;
 import md.enovaImport.utils.DialogUtils;
 import md.enovaImport.utils.FXMLUtils;
 import md.enovaImport.xml.models.PodatkiSkladki;
+import md.enovaImport.xml.models.Wyplata;
 
 import javax.mail.Part;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 import static com.sun.javafx.scene.layout.ScaledMath.round;
 
@@ -30,6 +35,7 @@ public class ListPatternWindowController {
     private final ObservableList<PayListPatternFX> payListPatternFXES = FXCollections.observableArrayList();
     private final ObservableList<ImportModelFX> importModelFXES = FXCollections.observableArrayList();
     private final ImportDAO importDAO = new ImportDAO();
+    private final PostgreSQLDAO postgreSQLDAO = new PostgreSQLDAO();
     @FXML
     private TableColumn listTableDescriptionList;
     @FXML
@@ -53,7 +59,6 @@ public class ListPatternWindowController {
     @FXML
     private ComboBox importComboBox;
     private List<ImportModel> importList;
-    private final PostgreSQLDAO postgreSQLDAO = new PostgreSQLDAO();
 
     public void initialize() {
         try {
@@ -78,7 +83,7 @@ public class ListPatternWindowController {
             final Label labelData = new Label();
 
             {
-                gridPane.getColumnConstraints().addAll(new ColumnConstraints(10, 30, 10), new ColumnConstraints(200, 200, 100));
+                gridPane.getColumnConstraints().addAll(new ColumnConstraints(30, 30, 30), new ColumnConstraints(200, 200, 100));
                 gridPane.add(labelId, 0, 1);
                 gridPane.add(labelOpis, 1, 1);
             }
@@ -215,7 +220,7 @@ public class ListPatternWindowController {
                     //     System.out.println("WZORZEC " +bookPattern);
                     List<BookKeepingPatternsPosition> bookKeepingPatternsPositions = importDAO.getBookKeepingPatternsPositionsById(item.getBookKeepingPatternType());
 
-                    for (int i = 0, j = 0; i < bookKeepingPatternsPositions.size(); i++) {
+                    for (int i = 0, j = 0; i < bookKeepingPatternsPositions.size(); i++, j++) {
                         BookKeepingPatternsPosition bookKeepingPatternsPosition = bookKeepingPatternsPositions.get(i);
 
 
@@ -290,35 +295,94 @@ public class ListPatternWindowController {
                             partSum = (double) Math.round(partSum * 100) / 100;
                             if (partSum > 0) {
                                 PK pk = new PK();
-                                pk.setPair_number(i + 1);
-                                pk.setUnderPair_number(j + 1);
+                                pk.setPair_number(j + 1);
+                                pk.setUnderPair_number(1);
                                 pk.setDescription(bookKeepingPatternsPosition.getName());
                                 pk.setBlame_account(bookKeepingPatternsPosition.getAccountBlame());
                                 pk.setBlame_value(partSum);
                                 pk.setHac_account(bookKeepingPatternsPosition.getAccountHas());
                                 pk.setHas_value(partSum);
                                 postgreSQLDAO.insertPK(pk);
-                                System.out.println("### "+pk+"###");
+                                System.out.println("### " + pk + "###");
+
                                 if (bookKeepingPatternsPosition.getDistributor()) {
+
                                     if (bookPattern == 1) {
-                                        System.out.println("wzorzec ksiegowania 1");
+                                        int k = 0;
+                                        j = j + 1;
+                                        List<Wyplata> wyplataList = importDAO.getWyplataList(item.getImportId(), item.getIdList());
+
+                                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                                        Date date = format.parse(item.getDateFrom());
+
+                                        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                                        int month = localDate.getMonthValue();
+                                        int year = localDate.getYear();
+
+                                        List<OrderWork> orderWorksList = postgreSQLDAO.getOrderWork(month, year, wyplataList);
+
+                                        Double timeSum = 0d;
+
+                                        for (OrderWork itemList : orderWorksList) {
+                                            timeSum += itemList.getTime();
+                                        }
+                                        Double percentSum = 0d;
+                                        Double accountSum = 0d;
+                                        List<PK> pkList= new ArrayList<>();
+
+                                        for (OrderWork itemList : orderWorksList) {
+                                            PK workersPk = new PK();
+                                            String distributorAccount = importDAO.getDepartmentDistrubotorAccountPosition("FIRMA", bookKeepingPatternsPosition.getDistributorPosition());
+                                            workersPk.setBlame_account(distributorAccount);
+                                            Double percent = (itemList.getTime() / timeSum);
+                                            percentSum = percentSum + percent;
+                                            workersPk.setBlame_value(Math.round((percent * pk.getBlame_value()) * 100d) / 100d);
+                                            if(workersPk.getBlame_value()>0)
+                                            pkList.add(workersPk);
+
+                                        }
+                                        pkList.sort(new Comparator<PK>() {
+                                            @Override
+                                            public int compare(PK o1, PK o2) {
+                                                return Double.compare(o1.getBlame_value(),o2.getBlame_value());
+                                            }
+                                        });
+
+                                        Double blameSUM=0d;
+                                        for(PK pkk :pkList){
+                                            blameSUM+=Math.round(pkk.getBlame_value()*100d)/100d;
+                                        }
+                                        blameSUM=Math.round(blameSUM*100d)/100d;
+                                        System.out.println(blameSUM);
+                                        Double diffrence = Math.round((pk.getBlame_value()-blameSUM)*100d)/100d;
+                                        System.out.println(diffrence);
+                                        pkList.get(pkList.size()-1).setBlame_value(pkList.get(pkList.size()-1).getBlame_value()+diffrence);
+
+                                        Double blameSUM2=0d;
+                                        for(PK pkk :pkList){
+                                            blameSUM2+=Math.round(pkk.getBlame_value()*100d)/100d;
+                                        }
+                                        System.out.println(blameSUM2);
+
+                                        for(PK pkk :pkList){
+                                            System.out.println(pkk);
+                                        }
                                     }
+
                                     if (bookPattern == 2) {
+                                        int k = 0;
+                                        j = j + 1;
                                         List<String> departmentList;
                                         departmentList = importDAO.getDepartmentListByList(item.getImportId(), item.getIdList());
-                                    /*    for (int x = 0; x < departmentList.size(); x++) {
-                                            if (departmentList.get(x).isEmpty()) {
-                                                departmentList.set(x, item.getDepartmentCode());
-                                            }
-                                        }*/
+
                                         for (String departmentItem : departmentList) {
                                             Double distributorPartSum = 0d;
                                             if (bookKeepingPatternsPosition.getPayment()) {
-                                                distributorPartSum = Math.abs(importDAO.getPaymentSumByDepartement(item.getImportId(), item.getIdList(),departmentItem));
+                                                distributorPartSum = Math.abs(importDAO.getPaymentSumByDepartement(item.getImportId(), item.getIdList(), departmentItem));
                                             }
 
                                             List<Parts> partsDistributor = importDAO.getPartsById(item.getBookKeepingPatternType(), bookKeepingPatternsPosition.getPositionId());
-                                            PodatkiSkladki podatkiSkladkiDistributor = importDAO.getTaxSUMListByIdAndByDepartment(item.getImportId(), item.getIdList(),departmentItem);
+                                            PodatkiSkladki podatkiSkladkiDistributor = importDAO.getTaxSUMListByIdAndByDepartment(item.getImportId(), item.getIdList(), departmentItem);
 
                                             for (Parts parts1 : partsDistributor) {
 
@@ -373,26 +437,45 @@ public class ListPatternWindowController {
 
                                                 } else if (parts1.getSymbol().equals("+")) {
                                                     {
-                                                        distributorPartSum = distributorPartSum + importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(),departmentItem);}
+                                                        distributorPartSum = distributorPartSum + importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(), departmentItem);
+                                                    }
                                                 } else {
-                                                    distributorPartSum = distributorPartSum - importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(),departmentItem);
+                                                    distributorPartSum = distributorPartSum - importDAO.getpartSumByDepartment(item.getImportId(), item.getIdList(), parts1.getPartsName(), departmentItem);
                                                 }
                                             }
+                                            if (departmentItem.isEmpty()) {
+                                                departmentItem = item.getDepartmentCode();
+                                            }
+                                            distributorPartSum = (double) Math.round(distributorPartSum * 100d) / 100d;
+                                            System.out.println(departmentItem + " " + distributorPartSum);
+                                            String distributorAccount = importDAO.getDepartmentDistrubotorAccountPosition(departmentItem, bookKeepingPatternsPosition.getDistributorPosition());
+                                            if (distributorPartSum > 0) {
+                                                PK underPk = new PK();
+                                                underPk.setPair_number(j + 1);
+                                                underPk.setUnderPair_number(++k);
+                                                underPk.setHas_value(k == 1 ? partSum : 0);
+                                                underPk.setHac_account(k == 1 ? bookKeepingPatternsPosition.getAccountDisributor() : "");
+                                                underPk.setDescription("Płace: rozksiegowanie");
+                                                underPk.setBlame_value(distributorPartSum);
+                                                underPk.setBlame_account(distributorAccount);
+                                                postgreSQLDAO.insertPK(underPk);
 
-                                            distributorPartSum = (double) Math.round(distributorPartSum * 100) / 100;
-                                            System.out.println(departmentItem+" "+distributorPartSum);
+                                                System.out.println("Under PK: " + underPk);
+                                            }
                                         }
 
-                                        System.out.println(departmentList);
-                                        System.out.println("wzorzec ksiegowania 2");
                                     }
-
+                                    if (bookPattern == 3) {
+                                        System.out.println("wzorzec ksiegowania 1");
+                                    }
 
 
                                 }
                             }
 
                         } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (ParseException ex) {
                             throw new RuntimeException(ex);
                         }
 
