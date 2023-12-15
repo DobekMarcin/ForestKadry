@@ -6,18 +6,21 @@ public class OrderWork {
     private Integer orderNumber;
     private Integer orderId;
     private Double time;
+    private String orderName;
 
-    public OrderWork(Integer orderYear, Integer orderNumber, Integer orderId, Double amount) {
+    public OrderWork(Integer orderYear, Integer orderNumber, Integer orderId, Double time, String orderName) {
         this.orderYear = orderYear;
         this.orderNumber = orderNumber;
         this.orderId = orderId;
-        this.time = amount;
+        this.time = time;
+        this.orderName = orderName;
     }
 
     public OrderWork() {
     }
 
     public Integer getOrderYear() {
+
         return orderYear;
     }
 
@@ -49,13 +52,11 @@ public class OrderWork {
         this.time = time;
     }
 
-    @Override
-    public String toString() {
-        return "OrderWork{" +
-                "orderYear=" + orderYear +
-                ", orderNumber=" + orderNumber +
-                ", orderId=" + orderId +
-                ", time=" + time +
-                '}';
+    public String getOrderName() {
+        return orderName;
+    }
+
+    public void setOrderName(String orderName) {
+        this.orderName = orderName;
     }
 }

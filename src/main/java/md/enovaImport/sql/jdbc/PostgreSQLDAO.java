@@ -104,7 +104,7 @@ public class PostgreSQLDAO {
                 workers = workers + wyplataList.get(i).getKodPracownika() + ")";
             }
         }
-        String query = ("Select C.rok,C.nr,A.id_zlecenia,g.rou2(sum(pracochlonnosc_h)) as suma from g.prod_karty_pracy A " + "left join g.prod_karty_pracy_pracownicy B " + "on B.rok=A.rok and B.mc=A.mc and B.nr=A.nr " + "LEFT JOIN G.MZK_ZLECENIA c ON c.id=A.id_zlecenia " + "where A.rok=? and A.mc=? " + "and B.id_pracownika in " + workers + " group by A.id_zlecenia,C.rok,C.nr having sum(pracochlonnosc_h)>0 order by A.id_zlecenia");
+        String query = ("Select C.rok,C.nr,A.id_zlecenia,g.rou2(sum(pracochlonnosc_h)) as suma,c.opis as opis from g.prod_karty_pracy A " + "left join g.prod_karty_pracy_pracownicy B " + "on B.rok=A.rok and B.mc=A.mc and B.nr=A.nr " + "LEFT JOIN G.MZK_ZLECENIA c ON c.id=A.id_zlecenia " + "where A.rok=? and A.mc=? " + "and B.id_pracownika in " + workers + " group by A.id_zlecenia,C.rok,C.opis,C.nr having sum(pracochlonnosc_h)>0 order by A.id_zlecenia");
 
         statement = connection.prepareStatement(query);
 
@@ -117,6 +117,7 @@ public class PostgreSQLDAO {
             orderWork.setOrderNumber(rs.getInt("nr"));
             orderWork.setOrderYear(rs.getInt("rok"));
             orderWork.setTime(rs.getDouble("suma"));
+            orderWork.setOrderName(rs.getString("opis"));
             orderWorksList.add(orderWork);
         }
         connection.close();
