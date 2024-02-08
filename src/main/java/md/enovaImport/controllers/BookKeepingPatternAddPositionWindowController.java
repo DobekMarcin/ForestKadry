@@ -38,7 +38,7 @@ public class BookKeepingPatternAddPositionWindowController {
     public void initialize() {
         distibutorAccountTextField.disableProperty().bind(distributorCheckField.selectedProperty().not());
         positionTextField.disableProperty().bind(distributorCheckField.selectedProperty().not());
-
+        positionTextField.setText("");
 
     }
 
@@ -53,8 +53,10 @@ public class BookKeepingPatternAddPositionWindowController {
             String distributorAccount = distibutorAccountTextField.getText();
             Boolean distributor = distributorCheckField.isSelected();
             Boolean payment = paymentCheckBox.isSelected();
-            Integer distributorPosition=Integer.valueOf(positionTextField.getText());
-
+            Integer distributorPosition = 0;
+            if(distributor == true) {
+                distributorPosition = Integer.valueOf(positionTextField.getText());
+            }
             bookKeepingPatternsPosition.setPatternId(bookKeepingPatternsFX.getId());
             bookKeepingPatternsPosition.setPositionId(lp);
             bookKeepingPatternsPosition.setName(name);
@@ -77,6 +79,8 @@ public class BookKeepingPatternAddPositionWindowController {
                 stage.close();}
             }
         } catch (NumberFormatException | SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             DialogUtils.errorDialog("Podajesz błędnę dane lub problem z komunikacją do bazy danych!");
         }
     }

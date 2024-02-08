@@ -352,7 +352,6 @@ public class ListPatternWindowController {
                                                 orderNumber=orderNumber.substring(1,6-temp.length());
 
                                                 workersPk.setBlame_account(workersPk.getBlame_account().replace("ZLEC",blameAccount+orderNumber+temp));
-                                                System.out.println(item.getDepartmentCode());
                                                  workersPk.setBlame_account(workersPk.getBlame_account().replace("WW",item.getDepartmentCode().equals("WT") ? "02":"01"));
                                                 workersPk.setHac_account("");
                                                 workersPk.setHas_value(0d);
