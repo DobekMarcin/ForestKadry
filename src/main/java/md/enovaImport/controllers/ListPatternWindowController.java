@@ -308,7 +308,7 @@ public class ListPatternWindowController {
                                 if (bookKeepingPatternsPosition.getDistributor()) {
 
                                     if (bookPattern == 1) {
-                                    //    int k = 0;
+                                        //    int k = 0;
                                         j = j + 1;
                                         List<Wyplata> wyplataList = importDAO.getWyplataList(item.getImportId(), item.getIdList());
 
@@ -327,11 +327,11 @@ public class ListPatternWindowController {
                                             timeSum += itemList.getTime();
                                         }
                                         Double percentSum = 0d;
-                                     //   Double accountSum = 0d;
-                                        List<PK> pkList= new ArrayList<>();
-         ////////////////////
-                                        j=j+1;
-                                        int x=1;
+                                        //   Double accountSum = 0d;
+                                        List<PK> pkList = new ArrayList<>();
+                                        ////////////////////
+                                        j = j + 1;
+                                        int x = 1;
                                         for (OrderWork itemList : orderWorksList) {
                                             PK workersPk = new PK();
                                             String distributorAccount = importDAO.getDepartmentDistrubotorAccountPosition("FIRMA", bookKeepingPatternsPosition.getDistributorPosition());
@@ -339,24 +339,37 @@ public class ListPatternWindowController {
                                             Double percent = (itemList.getTime() / timeSum);
                                             percentSum = percentSum + percent;
                                             workersPk.setBlame_value(Math.round((percent * pk.getBlame_value()) * 100d) / 100d);
-                                            if(workersPk.getBlame_value()>0)
-                                            {
+                                            if (workersPk.getBlame_value() > 0) {
                                                 workersPk.setPair_number(j);
                                                 workersPk.setUnderPair_number(x++);
-                                                workersPk.setDescription("["+itemList.getOrderNumber()+"/"+itemList.getOrderYear()+"] "+ itemList.getOrderId()+" - "+itemList.getOrderName());
+                                                workersPk.setDescription("[" + itemList.getOrderNumber() + "/" + itemList.getOrderYear() + "] " + itemList.getOrderId() + " - " + itemList.getOrderName());
 
-                                                String blameAccount=(itemList.getOrderYear()+"").substring(2,4);
-                                                String orderNumber="00000";
-                                                String temp=itemList.getOrderNumber()+"";
-
-                                                orderNumber=orderNumber.substring(1,6-temp.length());
-
-                                                workersPk.setBlame_account(workersPk.getBlame_account().replace("ZLEC",blameAccount+orderNumber+temp));
-                                                 workersPk.setBlame_account(workersPk.getBlame_account().replace("WW",item.getDepartmentCode().equals("WT") ? "02":"01"));
+                                                String blameAccount = (itemList.getOrderYear() + "").substring(2, 4);
+                                                String orderNumber = "00000";
+                                                String temp = itemList.getOrderNumber() + "";
+                                                String temp2 = itemList.getOrderId()+"";
+                                                if (temp2.equals("887"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "521-01-01"));
+                                                else if (temp2.equals("888"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "521-01-02"));
+                                                else if (temp2.equals("889"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "521-01-02"));
+                                                else if (temp2.equals("890"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "521-01-02"));
+                                                else if (temp2.equals("8280"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "531-01-01"));
+                                                else if (temp2.equals("13647"))
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("501-WW-ZLEC", "521-01-02"));
+                                                else {
+                                                    orderNumber = orderNumber.substring(1, 6 - temp.length());
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("ZLEC", blameAccount + orderNumber + temp));
+                                                    workersPk.setBlame_account(workersPk.getBlame_account().replace("WW", item.getDepartmentCode().equals("WT") ? "02" : "01"));
+                                                }
                                                 workersPk.setHac_account("");
                                                 workersPk.setHas_value(0d);
-                                                pkList.add(workersPk);}
-                                                //postgreSQLDAO.insertPK(workersPk);
+                                                pkList.add(workersPk);
+                                            }
+                                            //postgreSQLDAO.insertPK(workersPk);
                                         }
 
 
@@ -364,23 +377,23 @@ public class ListPatternWindowController {
                                         pkList.sort(new Comparator<PK>() {
                                             @Override
                                             public int compare(PK o1, PK o2) {
-                                                return Double.compare(o1.getUnderPair_number(),o2.getUnderPair_number());
+                                                return Double.compare(o1.getUnderPair_number(), o2.getUnderPair_number());
                                             }
                                         });
 
                                         // wyrownanie roznic
-                                        Double blameSUM=0d;
-                                        for(PK pkk :pkList){
-                                            blameSUM+=Math.round(pkk.getBlame_value()*100d)/100d;
+                                        Double blameSUM = 0d;
+                                        for (PK pkk : pkList) {
+                                            blameSUM += Math.round(pkk.getBlame_value() * 100d) / 100d;
                                         }
-                                        blameSUM=Math.round(blameSUM*100d)/100d;
-                                        Double diffrence = Math.round((pk.getBlame_value()-blameSUM)*100d)/100d;
-                                        pkList.get(pkList.size()-1).setBlame_value(pkList.get(pkList.size()-1).getBlame_value()+diffrence);
-                                        pkList.get(pkList.size()-1).setHac_account("490");
-                                        pkList.get(pkList.size()-1).setHas_value(pk.getBlame_value());
+                                        blameSUM = Math.round(blameSUM * 100d) / 100d;
+                                        Double diffrence = Math.round((pk.getBlame_value() - blameSUM) * 100d) / 100d;
+                                        pkList.get(pkList.size() - 1).setBlame_value(pkList.get(pkList.size() - 1).getBlame_value() + diffrence);
+                                        pkList.get(pkList.size() - 1).setHac_account("490");
+                                        pkList.get(pkList.size() - 1).setHas_value(pk.getBlame_value());
 
                                         //wyswietlenie danych oraz zapis do bazy
-                                        for(PK pkk :pkList){
+                                        for (PK pkk : pkList) {
                                             System.out.println(pkk);
                                             postgreSQLDAO.insertPK(pkk);
                                         }
@@ -480,13 +493,10 @@ public class ListPatternWindowController {
                                                 System.out.println("Under PK: " + underPk);
                                             }
                                         }
-
                                     }
                                     if (bookPattern == 3) {
                                         System.out.println("wzorzec ksiegowania 1");
                                     }
-
-
                                 }
                             }
 
@@ -501,10 +511,11 @@ public class ListPatternWindowController {
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
-
+                DialogUtils.informationDialog("Lista płac zaksięgowana poprawnie!");
             });
             initializeComboBox(item);
         }
+
 
     }
 

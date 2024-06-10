@@ -100,6 +100,4 @@ public class BookKeepingPatternAddPositionWindowController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
-
 }
