@@ -332,6 +332,8 @@ public class ListPatternWindowController {
                                         ////////////////////
                                         j = j + 1;
                                         int x = 1;
+
+                                      if(orderWorksList.size()>0){
                                         for (OrderWork itemList : orderWorksList) {
                                             PK workersPk = new PK();
                                             String distributorAccount = importDAO.getDepartmentDistrubotorAccountPosition("FIRMA", bookKeepingPatternsPosition.getDistributorPosition());
@@ -370,8 +372,21 @@ public class ListPatternWindowController {
                                                 pkList.add(workersPk);
                                             }
                                             //postgreSQLDAO.insertPK(workersPk);
-                                        }
+                                        }}else{
 
+                                          //kiedy nie ma zapisów pracy koszty wydziałowe
+                                          PK workersPk = new PK();
+                                          workersPk.setBlame_account( "521-01-02");
+                                          workersPk.setBlame_value(Math.round((1 * pk.getBlame_value()) * 100d) / 100d);
+                                          if (workersPk.getBlame_value() > 0) {
+                                              workersPk.setPair_number(j);
+                                              workersPk.setUnderPair_number(x++);
+                                              workersPk.setDescription("[Brak zapisów pracy - koszty wydziałowe]");
+                                              workersPk.setHac_account("");
+                                              workersPk.setHas_value(0d);
+                                              pkList.add(workersPk);
+                                          }
+                                          }
 
                                         //comparator
                                         pkList.sort(new Comparator<PK>() {
